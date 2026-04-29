@@ -532,9 +532,19 @@ button {
     .nav-brand {
         display: none;
     }
+    .navbar {
+        height: auto;
+        padding: 10px;
+    }
     .nav-links {
         width: 100%;
-        justify-content: center;
+        justify-content: flex-start;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 5px;
+    }
+    .nav-links::-webkit-scrollbar {
+        display: none;
     }
     
     .dashboard-table {
