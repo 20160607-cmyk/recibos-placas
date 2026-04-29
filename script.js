@@ -614,22 +614,23 @@ REGLAS DE FORMATO: Devuelve la respuesta ÃƒÅ¡NICAMENTE en HTML, usando etiqu
 let historyData = []; // Variable global para guardar el historial descargado
 
 function switchTab(tabId) {
-    // Ocultar todas las vistas
     document.getElementById("view-generator").style.display = "none";
     document.getElementById("view-dashboard").style.display = "none";
+    const vs = document.getElementById("view-shipping");
+    if (vs) vs.style.display = "none";
 
-    // Mostrar la seleccionada
     document.getElementById("view-" + tabId).style.display = "flex";
 
-    // Cambiar estilos de botones manualmente
     const btns = document.querySelectorAll(".nav-btn");
     btns.forEach(b => b.classList.remove("active"));
     
     if (tabId === 'generator') {
         btns[0].classList.add("active");
-    } else {
+    } else if (tabId === 'dashboard') {
         btns[1].classList.add("active");
         loadHistory();
+    } else if (tabId === 'shipping') {
+        if(btns.length > 2) btns[2].classList.add("active");
     }
 }
 
@@ -944,6 +945,8 @@ function logout() {
         document.getElementById('login-overlay').style.opacity = '1';
     }
 }
+
+
 
 
 function togglePassword() {
