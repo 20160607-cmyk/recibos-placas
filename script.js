@@ -1,7 +1,13 @@
-// ConfiguraciÃƒÂ³n de Supabase
+﻿// Configuracion de Supabase
 const SUPABASE_URL = 'https://tnqartdfhxbqkkrzlxxu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DGe59IRaOk4tZ5guTPx5Ug_PxXDTytc';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabaseClient;
+try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch(e) {
+    console.warn('Supabase no pudo inicializar:', e);
+    supabaseClient = null;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     checkSession();
@@ -155,6 +161,8 @@ async function saveToCloud() {
         folio_recibo: folioUI,
         entregado: false
     };
+
+    if (!supabaseClient) throw new Error('Supabase no disponible');
 
     const { error } = await supabaseClient
         .from('recibos')
@@ -341,6 +349,8 @@ async function generateReport() {
         const fechaFiltro = hace7Dias.toISOString();
 
         // 2. Traer datos de Supabase
+        if (!supabaseClient) throw new Error('Supabase no disponible');
+
         const { data, error } = await supabaseClient
             .from('recibos')
             .select('*')
@@ -419,201 +429,6 @@ REGLAS DE FORMATO: Devuelve la respuesta ÃƒÅ¡NICAMENTE en HTML, usando etiqu
 let historyData = []; // Variable global para guardar el historial descargado
 
 function switchTab(tabId) {
-    // Ocultar todas las vistas
-    document.getElementById("view-generator").style.display = "none";
-    document.getElementById("view-dashboard").style.display = "none";
-
-    // Mostrar la seleccionada
-    document.getElementById("view-" + tabId).style.display = "flex";
-
-    // Cambiar estilos de botones manualmente
-    const btns = document.querySelectorAll(".nav-btn");
-    btns.forEach(b => b.classList.remove("active"));
-    
-    if (tabId === 'generator') {
-        btns[0].classList.add("active");
-    } else {
-        btns[1].classList.add("active");
-        loadHistory();
-    }
-}
-
-async function loadHistory() {
-    const tbody = document.getElementById("history-tbody");
-    tbody.innerHTML = "<tr><td colspan=\"8\" style=\"text-align: center;\">Descargando datos desde Supabase... ??</td></tr>";
-
-    try {
-        const { data, error } = await supabaseClient
-            .from("recibos")
-            .select("*")
-            .order("created_at", { ascending: false });
-
-        if (error) throw error;
-        
-        historyData = data || [];
-        renderTable(historyData);
-    } catch (e) {
-        console.error(e);
-        tbody.innerHTML = "<tr><td colspan=\"8\" style=\"text-align: center; color: #ef4444;\">Error al cargar datos.</td></tr>";
-    }
-}
-
-function renderTable(dataArray) {
-    const tbody = document.getElementById("history-tbody");
-    
-    if (dataArray.length === 0) {
-        tbody.innerHTML = "<tr><td colspan=\"8\" style=\"text-align: center;\">No se encontraron recibos.</td></tr>";
-        return;
-    }
-
-    let html = "";
-    const currencyConfig = { style: "currency", currency: "MXN" };
-
-    dataArray.forEach(row => {
-        const fecha = row.created_at.split("T")[0];
-        const tieneDeuda = row.saldo_restante > 0;
-model: "deepseek-chat",
-                messages: [{"role": "user", "content": prompt}],
-                temperature: 0.1
-            })
-        });
-
-        const result = await response.json();
-        
-        if (result.error) throw new Error(result.error.message);
-
-        // Limpiar posible formato Markdown del JSON
-        let jsonStr = result.choices[0].message.content;
-        jsonStr = jsonStr.replace(/```json/g, '').replace(/```/g, '').trim();
-        const extracted = JSON.parse(jsonStr);
-
-        // 3. Autocompletar
-        if (extracted.nombre_cliente) document.getElementById('c-name').value = extracted.nombre_cliente;
-        if (extracted.fecha) document.getElementById('r-date').value = extracted.fecha;
-        
-        if (extracted.folio) {
-            document.getElementById('r-folio').value = extracted.folio;
-            document.getElementById('r-folio-full').value = extracted.folio;
-        }
-
-        // Actualizar UI
-        window.updatePreview();
-        statusDiv.innerText = "Ã¢Å“â€¦ Ã‚Â¡Datos autocompletados!";
-        setTimeout(() => statusDiv.style.display = 'none', 3000);
-
-    } catch (e) {
-        console.error(e);
-        statusDiv.innerText = "Ã¢Â Å’ Error al analizar la imagen.";
-        setTimeout(() => statusDiv.style.display = 'none', 3000);
-    }
-    
-    // Limpiar input
-    event.target.value = '';
-}
-
-// ==========================================
-// REPORTE DE VENTAS CON INTELIGENCIA ARTIFICIAL
-// ==========================================
-async function generateReport() {
-    const apiKey = document.getElementById('ds-key').value;
-    if (!apiKey) {
-        alert("Por favor, ingresa tu API Key de DeepSeek en los ajustes del negocio primero.");
-        return;
-    }
-
-    const modal = document.getElementById('ai-modal');
-    const reportBody = document.getElementById('ai-report-body');
-    
-    // Mostrar modal con estado de carga
-    modal.style.display = 'flex';
-    reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Cargando datos de la ÃƒÂºltima semana desde Supabase... Ã°Å¸â€ â€ž</div>';
-
-    try {
-        // 1. Calcular fecha de hace 7 dÃƒÂ­as
-        const hoy = new Date();
-        const hace7Dias = new Date(hoy);
-        hace7Dias.setDate(hoy.getDate() - 7);
-        const fechaFiltro = hace7Dias.toISOString();
-
-        // 2. Traer datos de Supabase
-        const { data, error } = await supabaseClient
-            .from('recibos')
-            .select('*')
-            .gte('created_at', fechaFiltro)
-            .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (!data || data.length === 0) {
-            reportBody.innerHTML = '<strong>No hay ventas registradas en los ÃƒÂºltimos 7 dÃƒÂ­as.</strong>';
-            return;
-        }
-
-        reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Analizando ' + data.length + ' ventas con DeepSeek... Ã°Å¸Â§Â </div>';
-
-        // 3. Preparar los datos para DeepSeek
-        // Para no exceder el lÃƒÂ­mite, solo enviaremos datos relevantes
-        const datosLimpios = data.map(v => ({
-            fecha: v.created_at.split('T')[0],
-            producto: v.concepto,
-            cantidad: v.cantidad,
-            precio: v.precio_unitario,
-            estado: v.estado_pago,
-            anticipo: v.anticipo,
-            saldo_pendiente: v.saldo_restante,
-            total: v.total
-        }));
-
-        const prompt = `ActÃƒÂºa como un analista financiero experto para mi negocio de placas personalizadas 3D para mascotas.
-AquÃƒÂ­ estÃƒÂ¡n mis ventas de los ÃƒÂºltimos 7 dÃƒÂ­as en formato JSON:
-${JSON.stringify(datosLimpios)}
-
-Por favor, genera un reporte ejecutivo muy breve que contenga:
-1. Un resumen de ingresos totales (incluyendo cuÃƒÂ¡nto dinero estÃƒÂ¡ pendiente de cobro).
-2. CuÃƒÂ¡l es el producto mÃƒÂ¡s vendido o tendencia principal.
-3. Un consejo estratÃƒÂ©gico accionable para la prÃƒÂ³xima semana.
-
-REGLAS DE FORMATO: Devuelve la respuesta ÃƒÅ¡NICAMENTE en HTML, usando etiquetas como <h3>, <ul>, <li> y <strong>. Usa un estilo amigable. NO uses markdown (ni \`\`\`html ni \`\`\`). Tu respuesta debe poder inyectarse directamente en un div.`;
-
-        // 4. Llamar a DeepSeek
-        const response = await fetch("https://api.deepseek.com/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model: "deepseek-chat",
-                messages: [{"role": "user", "content": prompt}],
-                temperature: 0.3
-            })
-        });
-
-        const result = await response.json();
-        
-        if (result.error) throw new Error(result.error.message);
-
-        let htmlReport = result.choices[0].message.content;
-        
-        // Limpiar en caso de que DeepSeek ponga markdown por error
-        htmlReport = htmlReport.replace(/```html/gi, '').replace(/```/g, '').trim();
-
-        // 5. Mostrar reporte
-        reportBody.innerHTML = htmlReport;
-
-    } catch (error) {
-        console.error(error);
-        reportBody.innerHTML = `<div style="color:#ef4444;">Ã¢Â Å’ Error al generar el reporte: ${error.message}</div>`;
-    }
-}
-
-// ==========================================
-// SPA: NAVEGACIÃ“N Y DASHBOARD
-// ==========================================
-
-let historyData = []; // Variable global para guardar el historial descargado
-
-function switchTab(tabId) {
     document.getElementById("view-generator").style.display = "none";
     document.getElementById("view-dashboard").style.display = "none";
     const vs = document.getElementById("view-shipping");
@@ -639,6 +454,8 @@ async function loadHistory() {
     tbody.innerHTML = "<tr><td colspan=\"8\" style=\"text-align: center;\">Descargando datos desde Supabase... ??</td></tr>";
 
     try {
+        if (!supabaseClient) throw new Error('Supabase no disponible');
+
         const { data, error } = await supabaseClient
             .from("recibos")
             .select("*")
@@ -720,11 +537,13 @@ async function liquidarDeuda(id) {
     if(!confirm("Â¿Confirmas que el cliente liquidÃ³ el saldo pendiente?")) return;
     
     try {
+        if (!supabaseClient) throw new Error('Supabase no disponible');
+
         const { error } = await supabaseClient
             .from("recibos")
-            .update({ 
-                saldo_restante: 0, 
-                estado_pago: "Completo" 
+            .update({
+                saldo_restante: 0,
+                estado_pago: "Completo"
             })
             .eq("id", id);
 
@@ -739,6 +558,8 @@ async function marcarEntregado(id) {
     if(!confirm("Â¿Confirmas que ya entregaste la plaquita a este cliente?")) return;
     
     try {
+        if (!supabaseClient) throw new Error('Supabase no disponible');
+
         const { error } = await supabaseClient
             .from("recibos")
             .update({ entregado: true })
@@ -947,16 +768,14 @@ function logout() {
 }
 
 
-
-
 function togglePassword() {
     const input = document.getElementById("login-password");
     const toggle = document.getElementById("toggle-pwd");
     if (input.type === "password") {
         input.type = "text";
-        toggle.textContent = "🙈";
+        toggle.innerHTML = "&#128584;";
     } else {
         input.type = "password";
-        toggle.textContent = "👁️";
+        toggle.innerHTML = "&#128065;";
     }
 }
