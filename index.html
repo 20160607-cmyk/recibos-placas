@@ -8,7 +8,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
+    <!-- Menú de Navegación -->
+    <nav class="navbar">
+        <div class="nav-brand">🐾 Patitas 3D</div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="switchTab('generator')">🖨️ Nuevo Recibo</button>
+            <button class="nav-btn" onclick="switchTab('dashboard')">📦 Panel de Control</button>
+        </div>
+    </nav>
+
+    <!-- VISTA 1: GENERADOR -->
+    <div id="view-generator" class="app-container">
         <!-- Panel Izquierdo: Controles -->
         <aside class="controls-panel no-print">
             <div class="glass-card">
@@ -100,13 +110,13 @@
                             <input type="number" id="i-advance" value="50" min="0">
                         </div>
                         <div class="input-field">
-                            <label>Folio / ID Transacción</label>
+                            <label>ID Transacción (Opcional)</label>
                             <input type="text" id="r-folio" placeholder="Opcional">
                         </div>
                     </div>
                     
                     <div class="input-field" id="folio-row-full">
-                        <label>Folio / ID Transacción</label>
+                        <label>ID Transacción (Opcional)</label>
                         <input type="text" id="r-folio-full" placeholder="Opcional">
                     </div>
                 </section>
@@ -121,13 +131,6 @@
                     </button>
                     <button class="btn-secondary" onclick="clearForm()">
                         Limpiar Datos
-                    </button>
-                </div>
-                
-                <!-- Reportes IA -->
-                <div style="margin-top: 20px;">
-                    <button class="btn-primary no-print" onclick="generateReport()" style="width: 100%; background: linear-gradient(135deg, #8b5cf6, #6366f1); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
-                        <span class="icon">📊</span> Generar Reporte Semanal con IA
                     </button>
                 </div>
             </div>
@@ -164,8 +167,8 @@
                             <span class="value" id="out-c-pet">--</span>
                         </div>
                         <div class="info-group" id="preview-folio-group" style="display:none;">
-                            <span class="label">Folio/Transacción:</span>
-                            <span class="value" id="out-folio">--</span>
+                            <span class="label">ID Transacción:</span>
+                            <span class="value" id="out-folio" style="word-break: break-all; overflow-wrap: anywhere;">--</span>
                         </div>
                     </div>
 
@@ -221,6 +224,43 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- VISTA 2: PANEL DE CONTROL -->
+    <div id="view-dashboard" class="app-container" style="display: none;">
+        <div class="glass-card" style="width: 100%; max-width: 1200px; margin: 0 auto; height: calc(100vh - 100px); display: flex; flex-direction: column;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h1 style="margin:0;">📦 Panel de Control</h1>
+                <button class="btn-primary" onclick="generateReport()" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+                    <span class="icon">📊</span> Reporte IA Semanal
+                </button>
+            </div>
+
+            <div class="search-bar" style="margin-bottom: 20px;">
+                <input type="text" id="search-input" placeholder="🔍 Buscar por Folio de Recibo, Nombre del Cliente o Fecha (YYYY-MM-DD)..." style="width: 100%; max-width: 500px;" oninput="filterHistory()">
+            </div>
+
+            <div class="table-container" style="flex: 1; overflow-y: auto;">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Recibo #</th>
+                            <th>Cliente</th>
+                            <th>Producto</th>
+                            <th>Estado Pago</th>
+                            <th>Saldo Pend.</th>
+                            <th>Entrega</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody">
+                        <tr><td colspan="8" style="text-align: center;">Cargando historial...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Reporte IA -->

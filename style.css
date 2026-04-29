@@ -31,9 +31,62 @@ body {
     min-height: 100vh;
 }
 
+/* =========================================================
+   NAVBAR Y NAVEGACIÓN (SPA)
+   ========================================================= */
+.navbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background: rgba(30, 41, 59, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav-brand {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.nav-links {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-btn.active {
+    color: #fff;
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+}
+
+/* =========================================================
+   ESTRUCTURA PRINCIPAL
+   ========================================================= */
 .app-container {
     display: flex;
-    height: 100vh;
+    height: calc(100vh - 60px);
     padding: 20px;
     gap: 30px;
 }
@@ -368,15 +421,73 @@ button {
 }
 
 /* =========================================================
+   TABLA DE DASHBOARD
+   ========================================================= */
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.dashboard-table th, .dashboard-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-table th {
+    font-weight: 600;
+    color: var(--text-muted);
+    position: sticky;
+    top: 0;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+}
+
+.dashboard-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.dashboard-table .badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+.badge-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+.badge-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+.action-btn-small {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-right: 5px;
+    transition: 0.2s;
+}
+.action-btn-small:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+.action-btn-small.btn-liquidar { background: rgba(16, 185, 129, 0.3); }
+.action-btn-small.btn-entregar { background: rgba(59, 130, 246, 0.3); }
+
+
+/* =========================================================
    DISEÑO RESPONSIVO (MÓVILES)
    ========================================================= */
 @media (max-width: 850px) {
     body {
         height: auto;
+        padding-top: 60px;
     }
     
     .app-container {
-        flex-direction: column-reverse; /* Mostrar el recibo arriba o los controles arriba? Mejor controles arriba */
         flex-direction: column;
         height: auto;
         padding: 10px;
@@ -414,5 +525,19 @@ button {
         width: 100%;
         max-width: 360px;
         padding: 30px 20px;
+    }
+
+    .nav-brand {
+        display: none;
+    }
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .dashboard-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
     }
 }
