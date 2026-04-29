@@ -4,6 +4,8 @@ const SUPABASE_KEY = 'sb_publishable_DGe59IRaOk4tZ5guTPx5Ug_PxXDTytc';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
+    checkSession();
+
     // 1. Obtener referencias a los inputs
     const inputs = {
         bName: document.getElementById('b-name'),
@@ -706,4 +708,45 @@ async function downloadShippingLabel() {
     }
 }
 
+
+
+// ==========================================
+// SEGURIDAD Y LOGIN
+// ==========================================
+function checkSession() {
+    if(localStorage.getItem('auth_session') === 'rjsoluciones3d') {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-app-content').style.display = 'block';
+    }
+}
+
+function checkPassword() {
+    const input = document.getElementById('login-password');
+    const err = document.getElementById('login-error');
+    
+    if(input.value === 'rjsoluciones3d') {
+        localStorage.setItem('auth_session', 'rjsoluciones3d');
+        document.getElementById('login-overlay').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-app-content').style.display = 'block';
+            document.getElementById('main-app-content').style.animation = 'fadeIn 0.5s';
+        }, 300);
+    } else {
+        err.style.display = 'block';
+        input.classList.add('shake');
+        setTimeout(() => input.classList.remove('shake'), 500);
+    }
+}
+
+function logout() {
+    if(confirm('¿Seguro que deseas salir del sistema?')) {
+        localStorage.removeItem('auth_session');
+        document.getElementById('login-password').value = '';
+        document.getElementById('login-error').style.display = 'none';
+        document.getElementById('main-app-content').style.display = 'none';
+        document.getElementById('login-overlay').style.display = 'flex';
+        document.getElementById('login-overlay').style.opacity = '1';
+    }
+}
 

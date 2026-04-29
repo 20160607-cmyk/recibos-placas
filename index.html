@@ -8,15 +8,32 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Menú de Navegación -->
-    <nav class="navbar">
-        <div class="nav-brand">🐾 Patitas 3D</div>
-        <div class="nav-links">
-            <button class="nav-btn active" onclick="switchTab('generator')">🖨️ Nuevo Recibo</button>
-            <button class="nav-btn" onclick="switchTab('dashboard')">📦 Panel de Control</button>
-            <button class="nav-btn" onclick="switchTab('shipping')">🚚 Etiquetas de Envío</button>
+    <!-- PANTALLA DE LOGIN -->
+    <div id="login-overlay">
+        <div class="login-box glass-card">
+            <div style="font-size: 3rem; text-align: center; margin-bottom: 10px;">🐾</div>
+            <h2 style="text-align: center; color: white; margin-bottom: 5px;">Patitas 3D</h2>
+            <p style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 25px;">Sistema de Administración</p>
+            
+            <input type="password" id="login-password" placeholder="Contraseña de acceso" onkeypress="if(event.key === 'Enter') checkPassword()">
+            <div id="login-error" style="color: #ef4444; font-size: 0.8rem; text-align: center; margin-bottom: 10px; display: none;">Contraseña incorrecta</div>
+            
+            <button class="btn-primary" onclick="checkPassword()" style="width: 100%;">Entrar al Sistema</button>
         </div>
-    </nav>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL DE LA APP (Oculto al inicio) -->
+    <div id="main-app-content" style="display: none;">
+        <!-- Menú de Navegación -->
+        <nav class="navbar">
+            <div class="nav-brand">🐾 Patitas 3D</div>
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="switchTab('generator')">🖨️ Nuevo Recibo</button>
+                <button class="nav-btn" onclick="switchTab('dashboard')">📦 Panel de Control</button>
+                <button class="nav-btn" onclick="switchTab('shipping')">🚚 Etiquetas de Envío</button>
+                <button class="nav-btn" onclick="logout()" style="color: #ef4444;">🚪 Salir</button>
+            </div>
+        </nav>
 
     <!-- VISTA 1: GENERADOR -->
     <div id="view-generator" class="app-container">
@@ -352,6 +369,8 @@
             </div>
         </div>
     </div>
+    
+    </div> <!-- FIN DE main-app-content -->
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
