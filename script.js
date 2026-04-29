@@ -489,8 +489,8 @@ function renderTable(dataArray) {
                 <td>${tieneDeuda ? row.saldo_restante.toLocaleString("es-MX", currencyConfig) : "$0.00"}</td>
                 <td>${badgeEntrega}</td>
                 <td>
-                    ${tieneDeuda ? \`<button class="action-btn-small btn-liquidar" onclick="liquidarDeuda(${row.id})">Liquidar</button>\` : ""}
-                    ${!row.entregado ? \`<button class="action-btn-small btn-entregar" onclick="marcarEntregado(${row.id})">Entregar</button>\` : ""}
+                    ${tieneDeuda ? `<button class="action-btn-small btn-liquidar" onclick="liquidarDeuda(${row.id})">Liquidar</button>` : ""}
+                    ${!row.entregado ? `<button class="action-btn-small btn-entregar" onclick="marcarEntregado(${row.id})">Entregar</button>` : ""}
                 </td>
             </tr>
         `;
