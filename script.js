@@ -1,7 +1,7 @@
 // Configuración de Supabase
 const SUPABASE_URL = 'https://tnqartdfhxbqkkrzlxxu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DGe59IRaOk4tZ5guTPx5Ug_PxXDTytc';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Obtener referencias a los inputs
@@ -107,7 +107,7 @@ async function printReceipt() {
         const total = cantidad * precio_unitario;
 
         // 1. Guardar en Supabase (La Nube)
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .from('recibos')
             .insert([
                 { 
