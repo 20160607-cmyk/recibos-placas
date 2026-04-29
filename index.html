@@ -113,8 +113,11 @@
 
                 <!-- Acciones -->
                 <div class="action-buttons">
-                    <button class="btn-primary" onclick="printReceipt()">
+                    <button class="btn-primary" id="btn-print" onclick="printReceipt()">
                         <span class="icon">🖨️</span> Exportar PDF / Imprimir
+                    </button>
+                    <button class="btn-primary" id="btn-img" onclick="downloadImage()" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
+                        <span class="icon">🖼️</span> Descargar como Imagen
                     </button>
                     <button class="btn-secondary" onclick="clearForm()">
                         Limpiar Datos
@@ -213,6 +216,7 @@
         </main>
     </div>
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>

@@ -129,50 +129,96 @@ document.addEventListener('DOMContentLoaded', () => {
     window.updatePreview();
 });
 
-// Función para guardar en nube e imprimir
+// Función abstracta para guardar en la nube
+async function saveToCloud() {
+    const isAdvance = document.getElementById('r-status').value === 'Anticipo';
+    const cantidad = parseInt(document.getElementById('i-qty').value) || 1;
+    const precio_unitario = parseFloat(document.getElementById('i-price').value) || 0;
+    const total = cantidad * precio_unitario;
+    const anticipo = isAdvance ? (parseFloat(document.getElementById('i-advance').value) || 0) : 0;
+    const saldo_restante = isAdvance ? (total - anticipo) : 0;
+
+    const dataObj = { 
+        cliente: document.getElementById('c-name').value || 'Sin Nombre',
+        mascota: document.getElementById('c-pet').value || '--',
+        concepto: document.getElementById('i-desc').value || 'Plaquita',
+        cantidad: cantidad,
+        precio_unitario: precio_unitario,
+        metodo_pago: document.getElementById('r-method').value,
+        estado_pago: document.getElementById('r-status').value,
+        anticipo: anticipo,
+        saldo_restante: saldo_restante,
+        total: total
+    };
+
+    const { error } = await supabaseClient
+        .from('recibos')
+        .insert([dataObj]);
+
+    if (error) {
+        console.error('Error de Supabase:', error);
+        throw error;
+    }
+}
+
+// Función para imprimir / exportar PDF
 async function printReceipt() {
-    const btn = document.querySelector('.btn-primary');
+    const btn = document.getElementById('btn-print');
     const originalText = btn.innerHTML;
     
     try {
-        btn.innerHTML = '<span class="icon">☁️</span> Guardando en la nube...';
+        btn.innerHTML = '<span class="icon">☁️</span> Guardando...';
         btn.disabled = true;
 
-        const isAdvance = document.getElementById('r-status').value === 'Anticipo';
-        const cantidad = parseInt(document.getElementById('i-qty').value) || 1;
-        const precio_unitario = parseFloat(document.getElementById('i-price').value) || 0;
-        const total = cantidad * precio_unitario;
-        const anticipo = isAdvance ? (parseFloat(document.getElementById('i-advance').value) || 0) : 0;
-        const saldo_restante = isAdvance ? (total - anticipo) : 0;
-
-        const dataObj = { 
-            cliente: document.getElementById('c-name').value || 'Sin Nombre',
-            mascota: document.getElementById('c-pet').value || '--',
-            concepto: document.getElementById('i-desc').value || 'Plaquita',
-            cantidad: cantidad,
-            precio_unitario: precio_unitario,
-            metodo_pago: document.getElementById('r-method').value,
-            estado_pago: document.getElementById('r-status').value,
-            anticipo: anticipo,
-            saldo_restante: saldo_restante,
-            total: total
-        };
-
-        const { data, error } = await supabaseClient
-            .from('recibos')
-            .insert([dataObj]);
-
-        if (error) {
-            console.error('Error de Supabase:', error);
-            alert("No se pudo guardar en la nube (quizá falta actualizar la tabla), pero sí se imprimirá el recibo.");
-        }
+        await saveToCloud();
 
     } catch (error) {
-        console.error('Error general:', error);
+        alert("Aviso: No se pudo guardar en la nube, pero se abrirá el PDF para imprimir.");
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
         window.print();
+    }
+}
+
+// Función para descargar como imagen PNG
+async function downloadImage() {
+    const btn = document.getElementById('btn-img');
+    const originalText = btn.innerHTML;
+    
+    try {
+        btn.innerHTML = '<span class="icon">☁️</span> Guardando y renderizando...';
+        btn.disabled = true;
+
+        // Guardar en la nube primero
+        try {
+            await saveToCloud();
+        } catch (e) {
+            console.error("Error al guardar en nube antes de imagen", e);
+        }
+
+        // Renderizar el div a Canvas
+        const receiptDiv = document.getElementById('receipt-card');
+        
+        // Esconder bordes curvos "zigzag" temporariamente si causan problemas, pero html2canvas lo maneja decentemente
+        const canvas = await html2canvas(receiptDiv, {
+            scale: 2, // Mejor resolución
+            backgroundColor: "#ffffff",
+            useCORS: true
+        });
+
+        // Crear link de descarga
+        const link = document.createElement('a');
+        link.download = `Recibo_${document.getElementById('c-pet').value || 'Mascota'}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+    } catch (error) {
+        console.error('Error al generar imagen:', error);
+        alert("Ocurrió un error al generar la imagen.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     }
 }
 
