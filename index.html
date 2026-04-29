@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Recibos Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Panel Izquierdo: Controles -->
+        <aside class="controls-panel no-print">
+            <div class="glass-card">
+                <h1>Generador de Recibos</h1>
+                <p class="subtitle">Crea recibos elegantes al instante.</p>
+                
+                <!-- Ajustes del Negocio (Se guardan) -->
+                <section class="control-group">
+                    <h2><span class="icon">⚙️</span> Datos del Negocio</h2>
+                    <div class="input-row">
+                        <div class="input-field">
+                            <label>Nombre del Negocio</label>
+                            <input type="text" id="b-name" placeholder="Ej. Patitas 3D" value="Patitas 3D">
+                        </div>
+                        <div class="input-field">
+                            <label>Teléfono de Contacto</label>
+                            <input type="text" id="b-phone" placeholder="Tu número">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Datos del Cliente y Venta -->
+                <section class="control-group">
+                    <h2><span class="icon">📝</span> Datos de la Venta</h2>
+                    <div class="input-field">
+                        <label>Nombre del Cliente</label>
+                        <input type="text" id="c-name" placeholder="Nombre completo">
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="input-field">
+                            <label>Nombre de Mascota</label>
+                            <input type="text" id="c-pet" placeholder="Ej. Firulais">
+                        </div>
+                        <div class="input-field">
+                            <label>Fecha</label>
+                            <input type="date" id="r-date">
+                        </div>
+                    </div>
+
+                    <div class="input-field">
+                        <label>Concepto (Producto)</label>
+                        <input type="text" id="i-desc" placeholder="Ej. Plaquita Hueso Azul" value="Plaquita Personalizada 3D">
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-field">
+                            <label>Cantidad</label>
+                            <input type="number" id="i-qty" value="1" min="1">
+                        </div>
+                        <div class="input-field">
+                            <label>Precio Unitario ($)</label>
+                            <input type="number" id="i-price" value="150" min="0">
+                        </div>
+                    </div>
+
+                    <div class="input-field">
+                        <label>Método de Pago</label>
+                        <select id="r-method">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- Acciones -->
+                <div class="action-buttons">
+                    <button class="btn-primary" onclick="printReceipt()">
+                        <span class="icon">🖨️</span> Exportar PDF / Imprimir
+                    </button>
+                    <button class="btn-secondary" onclick="clearForm()">
+                        Limpiar Datos
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Panel Derecho: Vista Previa -->
+        <main class="preview-panel">
+            <div class="receipt-wrapper">
+                <!-- Este es el recibo que se va a imprimir -->
+                <div class="receipt" id="receipt-card">
+                    <div class="receipt-header">
+                        <div class="logo-placeholder">🐾</div>
+                        <h2 id="out-b-name">Patitas 3D</h2>
+                        <p id="out-b-phone" class="b-phone">Tel: 000-000-0000</p>
+                    </div>
+
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-info">
+                        <div class="info-group">
+                            <span class="label">Fecha:</span>
+                            <span class="value" id="out-date">--/--/----</span>
+                        </div>
+                        <div class="info-group">
+                            <span class="label">Recibo #:</span>
+                            <span class="value" id="out-id">0001</span>
+                        </div>
+                        <div class="info-group">
+                            <span class="label">Cliente:</span>
+                            <span class="value" id="out-c-name">--</span>
+                        </div>
+                        <div class="info-group">
+                            <span class="label">Mascota:</span>
+                            <span class="value" id="out-c-pet">--</span>
+                        </div>
+                    </div>
+
+                    <div class="receipt-items">
+                        <div class="item-header">
+                            <span>Cant.</span>
+                            <span>Descripción</span>
+                            <span>Importe</span>
+                        </div>
+                        <div class="item-row">
+                            <span id="out-qty">1</span>
+                            <span id="out-desc">Plaquita Personalizada 3D</span>
+                            <span id="out-subtotal">$150.00</span>
+                        </div>
+                    </div>
+
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-total">
+                        <div class="total-row">
+                            <span>Método de pago:</span>
+                            <span id="out-method" class="pay-method">Efectivo</span>
+                        </div>
+                        <div class="total-row final-total">
+                            <span>TOTAL:</span>
+                            <span id="out-total">$150.00</span>
+                        </div>
+                    </div>
+
+                    <div class="receipt-footer">
+                        <p>¡Gracias por tu compra!</p>
+                        <p class="small">Tu mascota ahora está más segura 🐶❤️</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
