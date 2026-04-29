@@ -1,4 +1,4 @@
-// ConfiguraciÃ³n de Supabase
+﻿// ConfiguraciÃƒÂ³n de Supabase
 const SUPABASE_URL = 'https://tnqartdfhxbqkkrzlxxu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DGe59IRaOk4tZ5guTPx5Ug_PxXDTytc';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('bPhone')) inputs.bPhone.value = localStorage.getItem('bPhone');
     if (localStorage.getItem('dsKey')) inputs.dsKey.value = localStorage.getItem('dsKey');
 
-    // FunciÃ³n principal para actualizar la vista previa
+    // FunciÃƒÂ³n principal para actualizar la vista previa
     window.updatePreview = function() {
         const qty = parseFloat(inputs.iQty.value) || 0;
         const price = parseFloat(inputs.iPrice.value) || 0;
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.updatePreview();
 });
 
-// FunciÃ³n abstracta para guardar en la nube
+// FunciÃƒÂ³n abstracta para guardar en la nube
 async function saveToCloud() {
     const isAdvance = document.getElementById('r-status').value === 'Anticipo';
     const cantidad = parseInt(document.getElementById('i-qty').value) || 1;
@@ -137,7 +137,7 @@ async function saveToCloud() {
     const total = cantidad * precio_unitario;
     const anticipo = isAdvance ? (parseFloat(document.getElementById('i-advance').value) || 0) : 0;
     const saldo_restante = isAdvance ? (total - anticipo) : 0;
-    const folioUI = document.getElementById('out-id').textContent; // Folio de 4 dÃ­gitos generado
+    const folioUI = document.getElementById('out-id').textContent; // Folio de 4 dÃƒÂ­gitos generado
 
     const dataObj = { 
         cliente: document.getElementById('c-name').value || 'Sin Nombre',
@@ -164,19 +164,19 @@ async function saveToCloud() {
     }
 }
 
-// FunciÃ³n para imprimir / exportar PDF
+// FunciÃƒÂ³n para imprimir / exportar PDF
 async function printReceipt() {
     const btn = document.getElementById('btn-print');
     const originalText = btn.innerHTML;
     
     try {
-        btn.innerHTML = '<span class="icon">â˜ï¸</span> Guardando...';
+        btn.innerHTML = '<span class="icon">Ã¢ËœÂÃ¯Â¸Â</span> Guardando...';
         btn.disabled = true;
 
         await saveToCloud();
 
     } catch (error) {
-        alert("Aviso: No se pudo guardar en la nube, pero se abrirÃ¡ el PDF para imprimir.");
+        alert("Aviso: No se pudo guardar en la nube, pero se abrirÃƒÂ¡ el PDF para imprimir.");
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
@@ -184,13 +184,13 @@ async function printReceipt() {
     }
 }
 
-// FunciÃ³n para descargar como imagen PNG
+// FunciÃƒÂ³n para descargar como imagen PNG
 async function downloadImage() {
     const btn = document.getElementById('btn-img');
     const originalText = btn.innerHTML;
     
     try {
-        btn.innerHTML = '<span class="icon">â˜ï¸</span> Guardando y renderizando...';
+        btn.innerHTML = '<span class="icon">Ã¢ËœÂÃ¯Â¸Â</span> Guardando y renderizando...';
         btn.disabled = true;
 
         // Guardar en la nube primero
@@ -205,7 +205,7 @@ async function downloadImage() {
         
         // Esconder bordes curvos "zigzag" temporariamente si causan problemas, pero html2canvas lo maneja decentemente
         const canvas = await html2canvas(receiptDiv, {
-            scale: 2, // Mejor resoluciÃ³n
+            scale: 2, // Mejor resoluciÃƒÂ³n
             backgroundColor: "#ffffff",
             useCORS: true
         });
@@ -218,7 +218,7 @@ async function downloadImage() {
 
     } catch (error) {
         console.error('Error al generar imagen:', error);
-        alert("OcurriÃ³ un error al generar la imagen.");
+        alert("OcurriÃƒÂ³ un error al generar la imagen.");
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
@@ -226,7 +226,7 @@ async function downloadImage() {
 }
 
 function clearForm() {
-    if(confirm('Â¿Deseas limpiar los datos de esta venta?')) {
+    if(confirm('Ã‚Â¿Deseas limpiar los datos de esta venta?')) {
         document.getElementById('c-name').value = '';
         document.getElementById('c-pet').value = '';
         document.getElementById('i-qty').value = '1';
@@ -239,7 +239,7 @@ function clearForm() {
 }
 
 // ==========================================
-// ESCÃNER INTELIGENTE (Tesseract + DeepSeek)
+// ESCÃƒÂNER INTELIGENTE (Tesseract + DeepSeek)
 // ==========================================
 async function processImage(event) {
     const file = event.target.files[0];
@@ -253,18 +253,18 @@ async function processImage(event) {
 
     const statusDiv = document.getElementById('scanner-status');
     statusDiv.style.display = 'block';
-    statusDiv.innerText = "ðŸ‘€ Escaneando comprobante... (1/2)";
+    statusDiv.innerText = "Ã°Å¸â€˜â‚¬ Escaneando comprobante... (1/2)";
 
     try {
         // 1. Tesseract OCR
         const { data: { text } } = await Tesseract.recognize(file, 'spa');
         
-        if (!text || text.trim() === '') throw new Error("No se detectÃ³ texto");
+        if (!text || text.trim() === '') throw new Error("No se detectÃƒÂ³ texto");
         
-        statusDiv.innerText = "ðŸ§  Pensando con DeepSeek... (2/2)";
+        statusDiv.innerText = "Ã°Å¸Â§Â  Pensando con DeepSeek... (2/2)";
 
         // 2. DeepSeek API
-        const prompt = `Analiza el siguiente texto extraÃ­do de un comprobante de transferencia bancaria y extrae ÃšNICAMENTE un JSON vÃ¡lido con esta estructura:
+        const prompt = `Analiza el siguiente texto extraÃƒÂ­do de un comprobante de transferencia bancaria y extrae ÃƒÅ¡NICAMENTE un JSON vÃƒÂ¡lido con esta estructura:
 {"nombre_cliente": "El nombre de quien hace el pago/transferencia o titular", "fecha": "fecha en formato YYYY-MM-DD", "folio": "numero de rastreo o folio o autorizacion o clave de rastreo"}. Si no encuentras algo, pon "".
 Texto: ${text}`;
 
@@ -301,12 +301,12 @@ Texto: ${text}`;
 
         // Actualizar UI
         window.updatePreview();
-        statusDiv.innerText = "âœ… Â¡Datos autocompletados!";
+        statusDiv.innerText = "Ã¢Å“â€¦ Ã‚Â¡Datos autocompletados!";
         setTimeout(() => statusDiv.style.display = 'none', 3000);
 
     } catch (e) {
         console.error(e);
-        statusDiv.innerText = "âŒ Error al analizar la imagen.";
+        statusDiv.innerText = "Ã¢ÂÅ’ Error al analizar la imagen.";
         setTimeout(() => statusDiv.style.display = 'none', 3000);
     }
     
@@ -329,10 +329,10 @@ async function generateReport() {
     
     // Mostrar modal con estado de carga
     modal.style.display = 'flex';
-    reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Cargando datos de la Ãºltima semana desde Supabase... ðŸ”„</div>';
+    reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Cargando datos de la ÃƒÂºltima semana desde Supabase... Ã°Å¸â€â€ž</div>';
 
     try {
-        // 1. Calcular fecha de hace 7 dÃ­as
+        // 1. Calcular fecha de hace 7 dÃƒÂ­as
         const hoy = new Date();
         const hace7Dias = new Date(hoy);
         hace7Dias.setDate(hoy.getDate() - 7);
@@ -348,14 +348,14 @@ async function generateReport() {
         if (error) throw error;
 
         if (!data || data.length === 0) {
-            reportBody.innerHTML = '<strong>No hay ventas registradas en los Ãºltimos 7 dÃ­as.</strong>';
+            reportBody.innerHTML = '<strong>No hay ventas registradas en los ÃƒÂºltimos 7 dÃƒÂ­as.</strong>';
             return;
         }
 
-        reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Analizando ' + data.length + ' ventas con DeepSeek... ðŸ§ </div>';
+        reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Analizando ' + data.length + ' ventas con DeepSeek... Ã°Å¸Â§Â </div>';
 
         // 3. Preparar los datos para DeepSeek
-        // Para no exceder el lÃ­mite, solo enviaremos datos relevantes
+        // Para no exceder el lÃƒÂ­mite, solo enviaremos datos relevantes
         const datosLimpios = data.map(v => ({
             fecha: v.created_at.split('T')[0],
             producto: v.concepto,
@@ -367,16 +367,16 @@ async function generateReport() {
             total: v.total
         }));
 
-        const prompt = `ActÃºa como un analista financiero experto para mi negocio de placas personalizadas 3D para mascotas.
-AquÃ­ estÃ¡n mis ventas de los Ãºltimos 7 dÃ­as en formato JSON:
+        const prompt = `ActÃƒÂºa como un analista financiero experto para mi negocio de placas personalizadas 3D para mascotas.
+AquÃƒÂ­ estÃƒÂ¡n mis ventas de los ÃƒÂºltimos 7 dÃƒÂ­as en formato JSON:
 ${JSON.stringify(datosLimpios)}
 
 Por favor, genera un reporte ejecutivo muy breve que contenga:
-1. Un resumen de ingresos totales (incluyendo cuÃ¡nto dinero estÃ¡ pendiente de cobro).
-2. CuÃ¡l es el producto mÃ¡s vendido o tendencia principal.
-3. Un consejo estratÃ©gico accionable para la prÃ³xima semana.
+1. Un resumen de ingresos totales (incluyendo cuÃƒÂ¡nto dinero estÃƒÂ¡ pendiente de cobro).
+2. CuÃƒÂ¡l es el producto mÃƒÂ¡s vendido o tendencia principal.
+3. Un consejo estratÃƒÂ©gico accionable para la prÃƒÂ³xima semana.
 
-REGLAS DE FORMATO: Devuelve la respuesta ÃšNICAMENTE en HTML, usando etiquetas como <h3>, <ul>, <li> y <strong>. Usa un estilo amigable. NO uses markdown (ni \`\`\`html ni \`\`\`). Tu respuesta debe poder inyectarse directamente en un div.`;
+REGLAS DE FORMATO: Devuelve la respuesta ÃƒÅ¡NICAMENTE en HTML, usando etiquetas como <h3>, <ul>, <li> y <strong>. Usa un estilo amigable. NO uses markdown (ni \`\`\`html ni \`\`\`). Tu respuesta debe poder inyectarse directamente en un div.`;
 
         // 4. Llamar a DeepSeek
         const response = await fetch("https://api.deepseek.com/chat/completions", {
@@ -406,12 +406,12 @@ REGLAS DE FORMATO: Devuelve la respuesta ÃšNICAMENTE en HTML, usando etiquetas
 
     } catch (error) {
         console.error(error);
-        reportBody.innerHTML = `<div style="color:#ef4444;">âŒ Error al generar el reporte: ${error.message}</div>`;
+        reportBody.innerHTML = `<div style="color:#ef4444;">Ã¢ÂÅ’ Error al generar el reporte: ${error.message}</div>`;
     }
 }
 
 // ==========================================
-// SPA: NAVEGACIÓN Y DASHBOARD
+// SPA: NAVEGACIÃ“N Y DASHBOARD
 // ==========================================
 
 let historyData = []; // Variable global para guardar el historial descargado
@@ -476,7 +476,7 @@ function renderTable(dataArray) {
             : "<span class=\"badge badge-success\">Pagado</span>";
             
         const badgeEntrega = row.entregado
-            ? "<span class=\"badge badge-success\">Sí</span>"
+            ? "<span class=\"badge badge-success\">SÃ­</span>"
             : "<span class=\"badge badge-danger\">No</span>";
 
         html += `
@@ -519,7 +519,7 @@ function filterHistory() {
 
 // Acciones del Dashboard
 async function liquidarDeuda(id) {
-    if(!confirm("¿Confirmas que el cliente liquidó el saldo pendiente?")) return;
+    if(!confirm("Â¿Confirmas que el cliente liquidÃ³ el saldo pendiente?")) return;
     
     try {
         const { error } = await supabaseClient
@@ -538,7 +538,7 @@ async function liquidarDeuda(id) {
 }
 
 async function marcarEntregado(id) {
-    if(!confirm("¿Confirmas que ya entregaste la plaquita a este cliente?")) return;
+    if(!confirm("Â¿Confirmas que ya entregaste la plaquita a este cliente?")) return;
     
     try {
         const { error } = await supabaseClient
@@ -552,4 +552,158 @@ async function marcarEntregado(id) {
         alert("Error al actualizar: " + e.message);
     }
 }
+
+
+// ==========================================
+// MÓDULO DE ETIQUETAS DE ENVÍO
+// ==========================================
+
+function copyShippingTemplate() {
+    const template = `*¡Hola!* ?? Para poder realizar tu envío, por favor envíanos los siguientes datos en un solo mensaje:
+
+- *Nombre completo:* 
+- *Calle y número:* 
+- *Colonia/Barrio:* 
+- *Ciudad y Estado:* 
+- *Código Postal:* 
+- *Teléfono:* 
+- *Referencias de la casa:* (Ej. casa azul de 2 pisos)`;
+
+    navigator.clipboard.writeText(template).then(() => {
+        alert("¡Plantilla copiada al portapapeles! Lista para pegar en WhatsApp.");
+    }).catch(err => {
+        console.error("Error al copiar: ", err);
+        alert("No se pudo copiar automáticamente. Por favor copia manualmente.");
+    });
+}
+
+function clearShipping() {
+    document.getElementById("shipping-input").value = "";
+    document.getElementById("sl-name").textContent = "[NOMBRE DEL CLIENTE]";
+    document.getElementById("sl-address").textContent = "[Calle y Número]";
+    document.getElementById("sl-colony").textContent = "[Colonia]";
+    document.getElementById("sl-city").textContent = "[Ciudad y Estado]";
+    document.getElementById("sl-zip").textContent = "[00000]";
+    document.getElementById("sl-phone").textContent = "[000-000-0000]";
+    document.getElementById("sl-refs").textContent = "[Color de casa, entre calles, etc.]";
+}
+
+async function generateShippingLabel() {
+    const apiKey = document.getElementById("ds-key").value;
+    if (!apiKey) {
+        alert("Por favor, ingresa tu API Key de DeepSeek en la pestaña de Nuevo Recibo.");
+        return;
+    }
+
+    const textInput = document.getElementById("shipping-input").value;
+    if (!textInput || textInput.trim() === "") {
+        alert("Pega primero el mensaje del cliente.");
+        return;
+    }
+
+    const btn = document.getElementById("btn-ai-label");
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "<span class=\"icon\">??</span> Analizando con IA...";
+    btn.disabled = true;
+
+    try {
+        const prompt = `Extrae los datos de envío del siguiente texto y devuélvelos en formato JSON estricto.
+Usa las siguientes llaves exactas:
+"nombre"
+"calle"
+"colonia"
+"ciudad"
+"cp"
+"telefono"
+"referencias"
+
+Si no encuentras alguna de las partes, pon "No especificado".
+Texto del cliente:
+"${textInput}"`;
+
+        const response = await fetch("https://api.deepseek.com/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "deepseek-chat",
+                messages: [{"role": "user", "content": prompt}],
+                temperature: 0.1
+            })
+        });
+
+        const result = await response.json();
+        
+        if (result.error) throw new Error(result.error.message);
+
+        let jsonStr = result.choices[0].message.content;
+        jsonStr = jsonStr.replace(/```json/gi, "").replace(/```/g, "").trim();
+        const extracted = JSON.parse(jsonStr);
+
+        document.getElementById("sl-name").textContent = extracted.nombre || "No especificado";
+        document.getElementById("sl-address").textContent = extracted.calle || "No especificado";
+        document.getElementById("sl-colony").textContent = extracted.colonia || "No especificado";
+        document.getElementById("sl-city").textContent = extracted.ciudad || "No especificado";
+        document.getElementById("sl-zip").textContent = extracted.cp || "00000";
+        document.getElementById("sl-phone").textContent = extracted.telefono || "No especificado";
+        document.getElementById("sl-refs").textContent = extracted.referencias || "Ninguna";
+
+    } catch (error) {
+        console.error(error);
+        alert("Error al extraer datos con IA. Asegúrate de que el texto contiene información.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+function printShippingLabel() {
+    // Hide generator and dashboard, hide navbar, print only the label wrapper
+    const style = document.createElement("style");
+    style.id = "print-shipping-style";
+    style.innerHTML = `
+        @media print {
+            body * { visibility: hidden; }
+            #shipping-label-wrapper, #shipping-label-wrapper * { visibility: visible; }
+            #shipping-label-wrapper { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; margin: 0; padding: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    window.print();
+    document.head.removeChild(style);
+}
+
+async function downloadShippingLabel() {
+    const btn = document.getElementById("btn-img-shipping");
+    const originalText = btn.innerHTML;
+    
+    try {
+        btn.innerHTML = "<span class=\"icon\">?</span> Procesando...";
+        btn.disabled = true;
+
+        const labelDiv = document.getElementById("shipping-label-wrapper");
+        
+        const canvas = await html2canvas(labelDiv, {
+            scale: 2, 
+            backgroundColor: "#ffffff",
+            useCORS: true
+        });
+
+        const link = document.createElement("a");
+        const clientName = document.getElementById("sl-name").textContent.replace(/\\s+/g, "_");
+        link.download = `Etiqueta_${clientName}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+
+    } catch (error) {
+        console.error("Error al generar imagen:", error);
+        alert("Ocurrió un error al generar la imagen.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
 

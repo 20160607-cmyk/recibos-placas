@@ -14,6 +14,7 @@
         <div class="nav-links">
             <button class="nav-btn active" onclick="switchTab('generator')">🖨️ Nuevo Recibo</button>
             <button class="nav-btn" onclick="switchTab('dashboard')">📦 Panel de Control</button>
+            <button class="nav-btn" onclick="switchTab('shipping')">🚚 Etiquetas de Envío</button>
         </div>
     </nav>
 
@@ -261,6 +262,84 @@
                 </table>
             </div>
         </div>
+    </div>
+
+    <!-- VISTA 3: ETIQUETAS DE ENVÍO -->
+    <div id="view-shipping" class="app-container" style="display: none;">
+        <!-- Panel Izquierdo: Input IA -->
+        <aside class="controls-panel no-print">
+            <div class="glass-card">
+                <h1>Etiquetas de Envío</h1>
+                <p class="subtitle">Usa la IA para leer los datos del cliente.</p>
+                
+                <section class="control-group">
+                    <h2><span class="icon">📱</span> Paso 1: Pedir Datos</h2>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">Copia esta plantilla y mándasela a tu cliente por WhatsApp.</p>
+                    <button class="btn-secondary" onclick="copyShippingTemplate()" style="width:100%; margin-bottom: 10px;">
+                        <span class="icon">📋</span> Copiar Plantilla para WhatsApp
+                    </button>
+                </section>
+
+                <section class="control-group">
+                    <h2><span class="icon">🤖</span> Paso 2: Procesar con IA</h2>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">Pega aquí la respuesta que te dio el cliente (sin importar el formato).</p>
+                    <textarea id="shipping-input" rows="6" placeholder="Ej. Hola, manda a Juan Perez, Calle Primavera 123 col centro cp 2000 Aguascalientes..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: #fff; margin-bottom: 15px; font-family: inherit; resize: vertical;"></textarea>
+                    
+                    <button class="btn-primary" id="btn-ai-label" onclick="generateShippingLabel()" style="width:100%; background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
+                        <span class="icon">🪄</span> Crear Etiqueta con DeepSeek
+                    </button>
+                </section>
+
+                <div class="action-buttons" style="margin-top: 20px;">
+                    <button class="btn-primary" onclick="printShippingLabel()">
+                        <span class="icon">🖨️</span> Imprimir Etiqueta
+                    </button>
+                    <button class="btn-primary" id="btn-img-shipping" onclick="downloadShippingLabel()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                        <span class="icon">🖼️</span> Descargar PNG
+                    </button>
+                    <button class="btn-secondary" onclick="clearShipping()">Limpiar</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Panel Derecho: Vista Previa Etiqueta -->
+        <main class="preview-panel" style="display:flex; justify-content:center; align-items:center;">
+            <div class="shipping-wrapper" id="shipping-label-wrapper" style="background:#fff; width:100%; max-width:400px; padding:20px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.3); color:#000;">
+                <div id="shipping-label-card" style="border: 2px dashed #cbd5e1; padding: 20px; border-radius: 8px;">
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
+                        <h2 style="margin:0; font-size:1.4rem; font-weight:800; color:#000;">PAQUETE</h2>
+                        <span style="font-size:2rem;">📦</span>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <span style="font-size:0.7rem; color:#64748b; font-weight:700; text-transform:uppercase; display:block;">Destinatario</span>
+                        <strong id="sl-name" style="font-size:1.2rem; color:#000; display:block;">[NOMBRE DEL CLIENTE]</strong>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <span style="font-size:0.7rem; color:#64748b; font-weight:700; text-transform:uppercase; display:block;">Dirección</span>
+                        <span id="sl-address" style="font-size:1rem; display:block; margin-bottom:5px;">[Calle y Número]</span>
+                        <span id="sl-colony" style="font-size:1rem; display:block; margin-bottom:5px;">[Colonia]</span>
+                        <span style="font-size:1rem; display:block;"><strong id="sl-city">[Ciudad y Estado]</strong> - C.P. <strong id="sl-zip">[00000]</strong></span>
+                    </div>
+
+                    <div style="margin-bottom: 15px; background:#f1f5f9; padding:10px; border-radius:6px; border-left:4px solid #3b82f6;">
+                        <span style="font-size:0.7rem; color:#64748b; font-weight:700; text-transform:uppercase; display:block;">Referencias de entrega</span>
+                        <span id="sl-refs" style="font-size:0.9rem;">[Color de casa, entre calles, etc.]</span>
+                    </div>
+
+                    <div style="border-top: 1px dashed #cbd5e1; padding-top: 15px;">
+                        <span style="font-size:0.7rem; color:#64748b; font-weight:700; text-transform:uppercase; display:block;">Teléfono de Contacto</span>
+                        <strong id="sl-phone" style="font-size:1.1rem; color:#000;">[000-000-0000]</strong>
+                    </div>
+
+                    <div style="text-align:center; margin-top:20px; font-size:0.7rem; color:#94a3b8;">
+                        Enviado por Patitas 3D 🐾
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Modal Reporte IA -->
