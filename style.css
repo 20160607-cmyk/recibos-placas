@@ -97,9 +97,10 @@ body {
    PANEL IZQUIERDO (Controles)
    ========================================================= */
 .controls-panel {
-    width: 450px;
+    width: clamp(380px, 38%, 520px);
     height: 100%;
     overflow-y: auto;
+    min-width: 0;
 }
 
 .glass-card {
@@ -150,6 +151,7 @@ body {
     flex-direction: column;
     margin-bottom: 15px;
     flex: 1;
+    min-width: 0;
 }
 
 .input-field label {
@@ -162,6 +164,7 @@ body {
 }
 
 .input-field input, .input-field select {
+    width: 100%;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -170,6 +173,7 @@ body {
     font-size: 0.95rem;
     outline: none;
     transition: all 0.3s ease;
+    min-width: 0;
 }
 
 .input-field input:focus, .input-field select:focus {
