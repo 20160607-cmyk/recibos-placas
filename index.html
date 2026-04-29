@@ -17,7 +17,7 @@
                 
                 <!-- Ajustes del Negocio (Se guardan) -->
                 <section class="control-group">
-                    <h2><span class="icon">⚙️</span> Datos del Negocio</h2>
+                    <h2><span class="icon">⚙️</span> Datos del Negocio e IA</h2>
                     <div class="input-row">
                         <div class="input-field">
                             <label>Nombre del Negocio</label>
@@ -28,11 +28,22 @@
                             <input type="text" id="b-phone" placeholder="Tu número">
                         </div>
                     </div>
+                    <div class="input-field">
+                        <label>API Key de DeepSeek</label>
+                        <input type="password" id="ds-key" placeholder="sk-...">
+                    </div>
                 </section>
 
                 <!-- Datos del Cliente y Venta -->
                 <section class="control-group">
-                    <h2><span class="icon">📝</span> Datos de la Venta</h2>
+                    <h2>
+                        <span class="icon">📝</span> Datos de la Venta 
+                        <button class="btn-scanner no-print" onclick="document.getElementById('file-upload').click()">🪄 Escáner IA</button>
+                        <input type="file" id="file-upload" accept="image/*" style="display: none;" onchange="processImage(event)">
+                    </h2>
+                    
+                    <div id="scanner-status" style="display:none; font-size: 0.8rem; color: #fbbf24; margin-bottom: 10px;">Analizando imagen...</div>
+
                     <div class="input-field">
                         <label>Nombre del Cliente</label>
                         <input type="text" id="c-name" placeholder="Nombre completo">
@@ -65,13 +76,38 @@
                         </div>
                     </div>
 
-                    <div class="input-field">
-                        <label>Método de Pago</label>
-                        <select id="r-method">
-                            <option value="Efectivo">Efectivo</option>
-                            <option value="Transferencia">Transferencia</option>
-                            <option value="Tarjeta">Tarjeta</option>
-                        </select>
+                    <div class="input-row">
+                        <div class="input-field">
+                            <label>Método de Pago</label>
+                            <select id="r-method">
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Tarjeta">Tarjeta</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label>Estado del Pago</label>
+                            <select id="r-status">
+                                <option value="Completo">Pago Completo</option>
+                                <option value="Anticipo">Anticipo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-row" id="advance-row" style="display: none;">
+                        <div class="input-field">
+                            <label>Monto de Anticipo ($)</label>
+                            <input type="number" id="i-advance" value="50" min="0">
+                        </div>
+                        <div class="input-field">
+                            <label>Folio / ID Transacción</label>
+                            <input type="text" id="r-folio" placeholder="Opcional">
+                        </div>
+                    </div>
+                    
+                    <div class="input-field" id="folio-row-full">
+                        <label>Folio / ID Transacción</label>
+                        <input type="text" id="r-folio-full" placeholder="Opcional">
                     </div>
                 </section>
 
@@ -117,6 +153,10 @@
                             <span class="label">Mascota:</span>
                             <span class="value" id="out-c-pet">--</span>
                         </div>
+                        <div class="info-group" id="preview-folio-group" style="display:none;">
+                            <span class="label">Folio/Transacción:</span>
+                            <span class="value" id="out-folio">--</span>
+                        </div>
                     </div>
 
                     <div class="receipt-items">
@@ -139,7 +179,26 @@
                             <span>Método de pago:</span>
                             <span id="out-method" class="pay-method">Efectivo</span>
                         </div>
-                        <div class="total-row final-total">
+                        
+                        <!-- Sección dinámica de anticipo -->
+                        <div id="advance-preview-section" style="display: none;">
+                            <div class="total-row">
+                                <span>TOTAL:</span>
+                                <span id="out-calc-total">$150.00</span>
+                            </div>
+                            <div class="total-row" style="color: #059669;">
+                                <span>ANTICIPO (Pagado):</span>
+                                <span id="out-advance">-$50.00</span>
+                            </div>
+                            <div class="receipt-divider" style="margin: 10px 0;"></div>
+                            <div class="total-row final-total" style="color: #dc2626;">
+                                <span>SALDO PENDIENTE:</span>
+                                <span id="out-remaining">$100.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Sección de pago completo -->
+                        <div class="total-row final-total" id="full-preview-section">
                             <span>TOTAL:</span>
                             <span id="out-total">$150.00</span>
                         </div>
@@ -153,7 +212,8 @@
             </div>
         </main>
     </div>
-    <!-- Supabase JS -->
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
