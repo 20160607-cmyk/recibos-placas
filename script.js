@@ -1,4 +1,4 @@
-﻿// ConfiguraciÃƒÂ³n de Supabase
+// ConfiguraciÃƒÂ³n de Supabase
 const SUPABASE_URL = 'https://tnqartdfhxbqkkrzlxxu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DGe59IRaOk4tZ5guTPx5Ug_PxXDTytc';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -724,7 +724,7 @@ function checkPassword() {
     const input = document.getElementById('login-password');
     const err = document.getElementById('login-error');
     
-    if(input.value === 'rjsoluciones3d') {
+    if(input.value.trim().toLowerCase() === 'rjsoluciones3d') {
         localStorage.setItem('auth_session', 'rjsoluciones3d');
         document.getElementById('login-overlay').style.opacity = '0';
         setTimeout(() => {
@@ -747,6 +747,19 @@ function logout() {
         document.getElementById('main-app-content').style.display = 'none';
         document.getElementById('login-overlay').style.display = 'flex';
         document.getElementById('login-overlay').style.opacity = '1';
+    }
+}
+
+
+function togglePassword() {
+    const input = document.getElementById("login-password");
+    const toggle = document.getElementById("toggle-pwd");
+    if (input.type === "password") {
+        input.type = "text";
+        toggle.textContent = "??";
+    } else {
+        input.type = "password";
+        toggle.textContent = "???";
     }
 }
 

@@ -15,7 +15,10 @@
             <h2 style="text-align: center; color: white; margin-bottom: 5px;">Patitas 3D</h2>
             <p style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 25px;">Sistema de Administración</p>
             
-            <input type="password" id="login-password" placeholder="Contraseña de acceso" onkeypress="if(event.key === 'Enter') checkPassword()">
+            <div style="position: relative; margin-bottom: 15px;">
+                <input type="password" id="login-password" placeholder="Contraseña de acceso" onkeypress="if(event.key === 'Enter') checkPassword()" style="margin-bottom: 0; padding-right: 40px;">
+                <span id="toggle-pwd" onclick="togglePassword()" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 1.2rem;">👁️</span>
+            </div>
             <div id="login-error" style="color: #ef4444; font-size: 0.8rem; text-align: center; margin-bottom: 10px; display: none;">Contraseña incorrecta</div>
             
             <button class="btn-primary" onclick="checkPassword()" style="width: 100%;">Entrar al Sistema</button>
