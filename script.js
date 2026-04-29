@@ -310,3 +310,99 @@ Texto: ${text}`;
     // Limpiar input
     event.target.value = '';
 }
+
+// ==========================================
+// REPORTE DE VENTAS CON INTELIGENCIA ARTIFICIAL
+// ==========================================
+async function generateReport() {
+    const apiKey = document.getElementById('ds-key').value;
+    if (!apiKey) {
+        alert("Por favor, ingresa tu API Key de DeepSeek en los ajustes del negocio primero.");
+        return;
+    }
+
+    const modal = document.getElementById('ai-modal');
+    const reportBody = document.getElementById('ai-report-body');
+    
+    // Mostrar modal con estado de carga
+    modal.style.display = 'flex';
+    reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Cargando datos de la última semana desde Supabase... 🔄</div>';
+
+    try {
+        // 1. Calcular fecha de hace 7 días
+        const hoy = new Date();
+        const hace7Dias = new Date(hoy);
+        hace7Dias.setDate(hoy.getDate() - 7);
+        const fechaFiltro = hace7Dias.toISOString();
+
+        // 2. Traer datos de Supabase
+        const { data, error } = await supabaseClient
+            .from('recibos')
+            .select('*')
+            .gte('created_at', fechaFiltro)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            reportBody.innerHTML = '<strong>No hay ventas registradas en los últimos 7 días.</strong>';
+            return;
+        }
+
+        reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Analizando ' + data.length + ' ventas con DeepSeek... 🧠</div>';
+
+        // 3. Preparar los datos para DeepSeek
+        // Para no exceder el límite, solo enviaremos datos relevantes
+        const datosLimpios = data.map(v => ({
+            fecha: v.created_at.split('T')[0],
+            producto: v.concepto,
+            cantidad: v.cantidad,
+            precio: v.precio_unitario,
+            estado: v.estado_pago,
+            anticipo: v.anticipo,
+            saldo_pendiente: v.saldo_restante,
+            total: v.total
+        }));
+
+        const prompt = `Actúa como un analista financiero experto para mi negocio de placas personalizadas 3D para mascotas.
+Aquí están mis ventas de los últimos 7 días en formato JSON:
+${JSON.stringify(datosLimpios)}
+
+Por favor, genera un reporte ejecutivo muy breve que contenga:
+1. Un resumen de ingresos totales (incluyendo cuánto dinero está pendiente de cobro).
+2. Cuál es el producto más vendido o tendencia principal.
+3. Un consejo estratégico accionable para la próxima semana.
+
+REGLAS DE FORMATO: Devuelve la respuesta ÚNICAMENTE en HTML, usando etiquetas como <h3>, <ul>, <li> y <strong>. Usa un estilo amigable. NO uses markdown (ni \`\`\`html ni \`\`\`). Tu respuesta debe poder inyectarse directamente en un div.`;
+
+        // 4. Llamar a DeepSeek
+        const response = await fetch("https://api.deepseek.com/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "deepseek-chat",
+                messages: [{"role": "user", "content": prompt}],
+                temperature: 0.3
+            })
+        });
+
+        const result = await response.json();
+        
+        if (result.error) throw new Error(result.error.message);
+
+        let htmlReport = result.choices[0].message.content;
+        
+        // Limpiar en caso de que DeepSeek ponga markdown por error
+        htmlReport = htmlReport.replace(/```html/gi, '').replace(/```/g, '').trim();
+
+        // 5. Mostrar reporte
+        reportBody.innerHTML = htmlReport;
+
+    } catch (error) {
+        console.error(error);
+        reportBody.innerHTML = `<div style="color:#ef4444;">❌ Error al generar el reporte: ${error.message}</div>`;
+    }
+}
