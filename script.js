@@ -1,4 +1,4 @@
-// Configuración de Supabase
+// ConfiguraciÃ³n de Supabase
 const SUPABASE_URL = 'https://tnqartdfhxbqkkrzlxxu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DGe59IRaOk4tZ5guTPx5Ug_PxXDTytc';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('bPhone')) inputs.bPhone.value = localStorage.getItem('bPhone');
     if (localStorage.getItem('dsKey')) inputs.dsKey.value = localStorage.getItem('dsKey');
 
-    // Función principal para actualizar la vista previa
+    // FunciÃ³n principal para actualizar la vista previa
     window.updatePreview = function() {
         const qty = parseFloat(inputs.iQty.value) || 0;
         const price = parseFloat(inputs.iPrice.value) || 0;
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.updatePreview();
 });
 
-// Función abstracta para guardar en la nube
+// FunciÃ³n abstracta para guardar en la nube
 async function saveToCloud() {
     const isAdvance = document.getElementById('r-status').value === 'Anticipo';
     const cantidad = parseInt(document.getElementById('i-qty').value) || 1;
@@ -137,7 +137,7 @@ async function saveToCloud() {
     const total = cantidad * precio_unitario;
     const anticipo = isAdvance ? (parseFloat(document.getElementById('i-advance').value) || 0) : 0;
     const saldo_restante = isAdvance ? (total - anticipo) : 0;
-    const folioUI = document.getElementById('out-id').textContent; // Folio de 4 dígitos generado
+    const folioUI = document.getElementById('out-id').textContent; // Folio de 4 dÃ­gitos generado
 
     const dataObj = { 
         cliente: document.getElementById('c-name').value || 'Sin Nombre',
@@ -164,19 +164,19 @@ async function saveToCloud() {
     }
 }
 
-// Función para imprimir / exportar PDF
+// FunciÃ³n para imprimir / exportar PDF
 async function printReceipt() {
     const btn = document.getElementById('btn-print');
     const originalText = btn.innerHTML;
     
     try {
-        btn.innerHTML = '<span class="icon">☁️</span> Guardando...';
+        btn.innerHTML = '<span class="icon">â˜ï¸</span> Guardando...';
         btn.disabled = true;
 
         await saveToCloud();
 
     } catch (error) {
-        alert("Aviso: No se pudo guardar en la nube, pero se abrirá el PDF para imprimir.");
+        alert("Aviso: No se pudo guardar en la nube, pero se abrirÃ¡ el PDF para imprimir.");
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
@@ -184,13 +184,13 @@ async function printReceipt() {
     }
 }
 
-// Función para descargar como imagen PNG
+// FunciÃ³n para descargar como imagen PNG
 async function downloadImage() {
     const btn = document.getElementById('btn-img');
     const originalText = btn.innerHTML;
     
     try {
-        btn.innerHTML = '<span class="icon">☁️</span> Guardando y renderizando...';
+        btn.innerHTML = '<span class="icon">â˜ï¸</span> Guardando y renderizando...';
         btn.disabled = true;
 
         // Guardar en la nube primero
@@ -205,7 +205,7 @@ async function downloadImage() {
         
         // Esconder bordes curvos "zigzag" temporariamente si causan problemas, pero html2canvas lo maneja decentemente
         const canvas = await html2canvas(receiptDiv, {
-            scale: 2, // Mejor resolución
+            scale: 2, // Mejor resoluciÃ³n
             backgroundColor: "#ffffff",
             useCORS: true
         });
@@ -218,7 +218,7 @@ async function downloadImage() {
 
     } catch (error) {
         console.error('Error al generar imagen:', error);
-        alert("Ocurrió un error al generar la imagen.");
+        alert("OcurriÃ³ un error al generar la imagen.");
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
@@ -226,7 +226,7 @@ async function downloadImage() {
 }
 
 function clearForm() {
-    if(confirm('¿Deseas limpiar los datos de esta venta?')) {
+    if(confirm('Â¿Deseas limpiar los datos de esta venta?')) {
         document.getElementById('c-name').value = '';
         document.getElementById('c-pet').value = '';
         document.getElementById('i-qty').value = '1';
@@ -239,7 +239,7 @@ function clearForm() {
 }
 
 // ==========================================
-// ESCÁNER INTELIGENTE (Tesseract + DeepSeek)
+// ESCÃNER INTELIGENTE (Tesseract + DeepSeek)
 // ==========================================
 async function processImage(event) {
     const file = event.target.files[0];
@@ -253,18 +253,18 @@ async function processImage(event) {
 
     const statusDiv = document.getElementById('scanner-status');
     statusDiv.style.display = 'block';
-    statusDiv.innerText = "👀 Escaneando comprobante... (1/2)";
+    statusDiv.innerText = "ðŸ‘€ Escaneando comprobante... (1/2)";
 
     try {
         // 1. Tesseract OCR
         const { data: { text } } = await Tesseract.recognize(file, 'spa');
         
-        if (!text || text.trim() === '') throw new Error("No se detectó texto");
+        if (!text || text.trim() === '') throw new Error("No se detectÃ³ texto");
         
-        statusDiv.innerText = "🧠 Pensando con DeepSeek... (2/2)";
+        statusDiv.innerText = "ðŸ§  Pensando con DeepSeek... (2/2)";
 
         // 2. DeepSeek API
-        const prompt = `Analiza el siguiente texto extraído de un comprobante de transferencia bancaria y extrae ÚNICAMENTE un JSON válido con esta estructura:
+        const prompt = `Analiza el siguiente texto extraÃ­do de un comprobante de transferencia bancaria y extrae ÃšNICAMENTE un JSON vÃ¡lido con esta estructura:
 {"nombre_cliente": "El nombre de quien hace el pago/transferencia o titular", "fecha": "fecha en formato YYYY-MM-DD", "folio": "numero de rastreo o folio o autorizacion o clave de rastreo"}. Si no encuentras algo, pon "".
 Texto: ${text}`;
 
@@ -301,12 +301,12 @@ Texto: ${text}`;
 
         // Actualizar UI
         window.updatePreview();
-        statusDiv.innerText = "✅ ¡Datos autocompletados!";
+        statusDiv.innerText = "âœ… Â¡Datos autocompletados!";
         setTimeout(() => statusDiv.style.display = 'none', 3000);
 
     } catch (e) {
         console.error(e);
-        statusDiv.innerText = "❌ Error al analizar la imagen.";
+        statusDiv.innerText = "âŒ Error al analizar la imagen.";
         setTimeout(() => statusDiv.style.display = 'none', 3000);
     }
     
@@ -329,10 +329,10 @@ async function generateReport() {
     
     // Mostrar modal con estado de carga
     modal.style.display = 'flex';
-    reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Cargando datos de la última semana desde Supabase... 🔄</div>';
+    reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Cargando datos de la Ãºltima semana desde Supabase... ðŸ”„</div>';
 
     try {
-        // 1. Calcular fecha de hace 7 días
+        // 1. Calcular fecha de hace 7 dÃ­as
         const hoy = new Date();
         const hace7Dias = new Date(hoy);
         hace7Dias.setDate(hoy.getDate() - 7);
@@ -348,14 +348,14 @@ async function generateReport() {
         if (error) throw error;
 
         if (!data || data.length === 0) {
-            reportBody.innerHTML = '<strong>No hay ventas registradas en los últimos 7 días.</strong>';
+            reportBody.innerHTML = '<strong>No hay ventas registradas en los Ãºltimos 7 dÃ­as.</strong>';
             return;
         }
 
-        reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Analizando ' + data.length + ' ventas con DeepSeek... 🧠</div>';
+        reportBody.innerHTML = '<div style="text-align:center; padding:20px;">Analizando ' + data.length + ' ventas con DeepSeek... ðŸ§ </div>';
 
         // 3. Preparar los datos para DeepSeek
-        // Para no exceder el límite, solo enviaremos datos relevantes
+        // Para no exceder el lÃ­mite, solo enviaremos datos relevantes
         const datosLimpios = data.map(v => ({
             fecha: v.created_at.split('T')[0],
             producto: v.concepto,
@@ -367,16 +367,16 @@ async function generateReport() {
             total: v.total
         }));
 
-        const prompt = `Actúa como un analista financiero experto para mi negocio de placas personalizadas 3D para mascotas.
-Aquí están mis ventas de los últimos 7 días en formato JSON:
+        const prompt = `ActÃºa como un analista financiero experto para mi negocio de placas personalizadas 3D para mascotas.
+AquÃ­ estÃ¡n mis ventas de los Ãºltimos 7 dÃ­as en formato JSON:
 ${JSON.stringify(datosLimpios)}
 
 Por favor, genera un reporte ejecutivo muy breve que contenga:
-1. Un resumen de ingresos totales (incluyendo cuánto dinero está pendiente de cobro).
-2. Cuál es el producto más vendido o tendencia principal.
-3. Un consejo estratégico accionable para la próxima semana.
+1. Un resumen de ingresos totales (incluyendo cuÃ¡nto dinero estÃ¡ pendiente de cobro).
+2. CuÃ¡l es el producto mÃ¡s vendido o tendencia principal.
+3. Un consejo estratÃ©gico accionable para la prÃ³xima semana.
 
-REGLAS DE FORMATO: Devuelve la respuesta ÚNICAMENTE en HTML, usando etiquetas como <h3>, <ul>, <li> y <strong>. Usa un estilo amigable. NO uses markdown (ni \`\`\`html ni \`\`\`). Tu respuesta debe poder inyectarse directamente en un div.`;
+REGLAS DE FORMATO: Devuelve la respuesta ÃšNICAMENTE en HTML, usando etiquetas como <h3>, <ul>, <li> y <strong>. Usa un estilo amigable. NO uses markdown (ni \`\`\`html ni \`\`\`). Tu respuesta debe poder inyectarse directamente en un div.`;
 
         // 4. Llamar a DeepSeek
         const response = await fetch("https://api.deepseek.com/chat/completions", {
@@ -406,21 +406,17 @@ REGLAS DE FORMATO: Devuelve la respuesta ÚNICAMENTE en HTML, usando etiquetas c
 
     } catch (error) {
         console.error(error);
-        reportBody.innerHTML = `<div style="color:#ef4444;">❌ Error al generar el reporte: ${error.message}</div>`;
+        reportBody.innerHTML = `<div style="color:#ef4444;">âŒ Error al generar el reporte: ${error.message}</div>`;
     }
 }
 
 // ==========================================
-// SPA: NAVEGACI�N Y DASHBOARD
+// SPA: NAVEGACIÓN Y DASHBOARD
 // ==========================================
 
 let historyData = []; // Variable global para guardar el historial descargado
 
 function switchTab(tabId) {
-    // Cambiar estilos de botones
-    document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
-    event.target.classList.add("active");
-
     // Ocultar todas las vistas
     document.getElementById("view-generator").style.display = "none";
     document.getElementById("view-dashboard").style.display = "none";
@@ -428,7 +424,14 @@ function switchTab(tabId) {
     // Mostrar la seleccionada
     document.getElementById("view-" + tabId).style.display = "flex";
 
-    if (tabId === "dashboard") {
+    // Cambiar estilos de botones manualmente
+    const btns = document.querySelectorAll(".nav-btn");
+    btns.forEach(b => b.classList.remove("active"));
+    
+    if (tabId === 'generator') {
+        btns[0].classList.add("active");
+    } else {
+        btns[1].classList.add("active");
         loadHistory();
     }
 }
@@ -473,7 +476,7 @@ function renderTable(dataArray) {
             : "<span class=\"badge badge-success\">Pagado</span>";
             
         const badgeEntrega = row.entregado
-            ? "<span class=\"badge badge-success\">S�</span>"
+            ? "<span class=\"badge badge-success\">Sí</span>"
             : "<span class=\"badge badge-danger\">No</span>";
 
         html += `
@@ -516,7 +519,7 @@ function filterHistory() {
 
 // Acciones del Dashboard
 async function liquidarDeuda(id) {
-    if(!confirm("�Confirmas que el cliente liquid� el saldo pendiente?")) return;
+    if(!confirm("¿Confirmas que el cliente liquidó el saldo pendiente?")) return;
     
     try {
         const { error } = await supabaseClient
@@ -535,7 +538,7 @@ async function liquidarDeuda(id) {
 }
 
 async function marcarEntregado(id) {
-    if(!confirm("�Confirmas que ya entregaste la plaquita a este cliente?")) return;
+    if(!confirm("¿Confirmas que ya entregaste la plaquita a este cliente?")) return;
     
     try {
         const { error } = await supabaseClient
