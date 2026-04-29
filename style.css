@@ -353,3 +353,53 @@ button {
         display: none;
     }
 }
+
+/* =========================================================
+   DISEÑO RESPONSIVO (MÓVILES)
+   ========================================================= */
+@media (max-width: 850px) {
+    body {
+        height: auto;
+    }
+    
+    .app-container {
+        flex-direction: column-reverse; /* Mostrar el recibo arriba o los controles arriba? Mejor controles arriba */
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+        gap: 20px;
+    }
+
+    .controls-panel {
+        width: 100%;
+        height: auto;
+        overflow-y: visible;
+    }
+
+    .glass-card {
+        padding: 20px;
+    }
+
+    .input-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .preview-panel {
+        width: 100%;
+        min-height: 500px;
+    }
+
+    .receipt-wrapper {
+        padding: 20px 10px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .receipt {
+        width: 100%;
+        max-width: 360px;
+        padding: 30px 20px;
+    }
+}
