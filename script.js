@@ -512,7 +512,7 @@ function renderTable(dataArray) {
             : "<span class=\"badge badge-danger\">No</span>";
 
         html += `
-            <tr>
+            <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'BUTTON') showRowDetails(${row.id})">
                 <td>${fecha}</td>
                 <td><strong>#${row.folio_recibo || "N/A"}</strong></td>
                 <td>${row.cliente}</td>
@@ -531,6 +531,39 @@ function renderTable(dataArray) {
     });
 
     tbody.innerHTML = html;
+}
+
+function showRowDetails(id) {
+    const row = historyData.find(r => r.id === id);
+    if (!row) return;
+
+    const mascota = row.mascota || '—';
+    const tel1 = row.telefono_grabado || '—';
+    const tel2 = row.telefono_grabado_2 || '—';
+    const color = row.color_placa || '—';
+
+    document.getElementById('details-modal-body').innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Mascota</span>
+                <p style="color: #fff; font-size: 1.1rem; font-weight: 700; margin: 4px 0 0;">${mascota}</p>
+            </div>
+            <div>
+                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Teléfono Línea 1</span>
+                <p style="color: #fff; font-size: 1.1rem; margin: 4px 0 0;">${tel1}</p>
+            </div>
+            <div>
+                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Teléfono Línea 2</span>
+                <p style="color: ${tel2 === '—' ? 'var(--text-muted)' : '#fff'}; font-size: 1.1rem; margin: 4px 0 0;">${tel2}</p>
+            </div>
+            <div>
+                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Color de Placa</span>
+                <p style="color: #fff; font-size: 1rem; margin: 4px 0 0;">${color}</p>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('details-modal').style.display = 'flex';
 }
 
 function filterHistory() {
