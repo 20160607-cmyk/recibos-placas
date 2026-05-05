@@ -260,7 +260,11 @@ function clearForm() {
 async function processImage(event) {
     const file = event.target.files[0];
     if (!file) return;
+    await _runScanner(file);
+    event.target.value = '';
+}
 
+async function _runScanner(file) {
     const apiKey = document.getElementById('ds-key').value;
     if (!apiKey) {
         alert("Por favor, ingresa tu API Key de DeepSeek en los ajustes del negocio primero.");
@@ -326,8 +330,6 @@ Texto: ${text}`;
         setTimeout(() => statusDiv.style.display = 'none', 3000);
     }
     
-    // Limpiar input
-    event.target.value = '';
 }
 
 // ==========================================
@@ -433,6 +435,73 @@ REGLAS DE FORMATO: Devuelve la respuesta ÃƒÅ¡NICAMENTE en HTML, usando etiqu
 // ==========================================
 
 let historyData = []; // Variable global para guardar el historial descargado
+let _chartIngresos = null;
+let _chartColores  = null;
+
+function renderCharts(data) {
+    // --- Ingresos por día (últimos 10 días con registros) ---
+    const byDate = {};
+    data.forEach(r => {
+        const d = (r.created_at || '').split('T')[0];
+        if (!d) return;
+        byDate[d] = (byDate[d] || 0) + (r.total || 0);
+    });
+    const dateLabels = Object.keys(byDate).sort().slice(-10);
+    const dateValues = dateLabels.map(d => byDate[d]);
+
+    if (_chartIngresos) _chartIngresos.destroy();
+    _chartIngresos = new Chart(
+        document.getElementById('chart-ingresos').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: dateLabels.map(d => d.slice(5)),
+            datasets: [{
+                data: dateValues,
+                backgroundColor: 'rgba(99,102,241,0.7)',
+                borderColor: '#6366f1',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            }
+        }
+    });
+
+    // --- Placas por color (dona) ---
+    const byColor = {};
+    data.forEach(r => {
+        const c = r.color_placa || 'Sin color';
+        byColor[c] = (byColor[c] || 0) + 1;
+    });
+    const colorLabels = Object.keys(byColor);
+    const PLATE_PALETTE = { negro: '#334155', rosa: '#f472b6', azul: '#3b82f6', verde: '#22c55e' };
+    const bgColors = colorLabels.map(name => {
+        const key = Object.keys(PLATE_PALETTE).find(k => name.toLowerCase().includes(k));
+        return key ? PLATE_PALETTE[key] : '#94a3b8';
+    });
+
+    if (_chartColores) _chartColores.destroy();
+    _chartColores = new Chart(
+        document.getElementById('chart-colores').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: colorLabels,
+            datasets: [{ data: colorLabels.map(k => byColor[k]), backgroundColor: bgColors, borderColor: '#1e293b', borderWidth: 2 }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 9 }, boxWidth: 10, padding: 6 } }
+            }
+        }
+    });
+}
 
 function switchTab(tabId) {
     document.getElementById("view-generator").style.display = "none";
@@ -471,6 +540,7 @@ async function loadHistory() {
         
         historyData = data || [];
         renderTable(historyData);
+        renderCharts(historyData);
     } catch (e) {
         console.error(e);
         tbody.innerHTML = "<tr><td colspan=\"8\" style=\"text-align: center; color: #ef4444;\">Error al cargar datos.</td></tr>";
@@ -837,6 +907,19 @@ function logout() {
     }
 }
 
+
+// Pegar imagen del portapapeles (Ctrl+V)
+document.addEventListener('paste', function(e) {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
+            const file = items[i].getAsFile();
+            if (file) _runScanner(file);
+            break;
+        }
+    }
+});
 
 function togglePassword() {
     const input = document.getElementById("login-password");

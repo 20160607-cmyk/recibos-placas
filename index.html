@@ -69,7 +69,7 @@
                 <section class="control-group">
                     <h2>
                         <span class="icon">📝</span> Datos de la Venta 
-                        <button class="btn-scanner no-print" onclick="document.getElementById('file-upload').click()">🪄 Escáner IA</button>
+                        <button class="btn-scanner no-print" onclick="document.getElementById('file-upload').click()">🪄 Escáner IA (o Ctrl+V)</button>
                         <input type="file" id="file-upload" accept="image/*" style="display: none;" onchange="processImage(event)">
                     </h2>
                     
@@ -282,6 +282,18 @@
                 </button>
             </div>
 
+            <!-- Gráficos Analíticos -->
+            <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+                <div class="glass-card" style="flex: 1; min-width: 260px; padding: 14px;">
+                    <p style="color: var(--text-muted); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; margin: 0 0 8px;">Ingresos por Día</p>
+                    <canvas id="chart-ingresos" height="120"></canvas>
+                </div>
+                <div class="glass-card" style="flex: 0 0 200px; padding: 14px; display: flex; flex-direction: column; align-items: center;">
+                    <p style="color: var(--text-muted); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; margin: 0 0 8px;">Placas por Color</p>
+                    <canvas id="chart-colores" style="max-height: 120px;"></canvas>
+                </div>
+            </div>
+
             <div class="search-bar" style="margin-bottom: 20px;">
                 <input type="text" id="search-input" placeholder="🔍 Buscar por Folio de Recibo, Nombre del Cliente o Fecha (YYYY-MM-DD)..." style="width: 100%; max-width: 500px;" oninput="filterHistory()">
             </div>
@@ -413,6 +425,7 @@
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js?v=3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="script.js?v=4"></script>
 </body>
 </html>
