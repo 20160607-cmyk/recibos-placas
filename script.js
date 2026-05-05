@@ -1,4 +1,4 @@
-﻿// Configuracion de Supabase
+// Configuracion de Supabase
 const SUPABASE_URL = 'https://tnqartdfhxbqkkrzlxxu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DGe59IRaOk4tZ5guTPx5Ug_PxXDTytc';
 let supabaseClient;
@@ -465,6 +465,7 @@ function renderCharts(data) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
                 x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
@@ -496,6 +497,7 @@ function renderCharts(data) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 9 }, boxWidth: 10, padding: 6 } }
             }

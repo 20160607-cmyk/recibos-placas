@@ -283,14 +283,18 @@
             </div>
 
             <!-- Gráficos Analíticos -->
-            <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
-                <div class="glass-card" style="flex: 1; min-width: 260px; padding: 14px;">
+            <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; max-height: 200px;">
+                <div class="glass-card" style="flex: 1; min-width: 260px; padding: 14px; position: relative; display: flex; flex-direction: column;">
                     <p style="color: var(--text-muted); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; margin: 0 0 8px;">Ingresos por Día</p>
-                    <canvas id="chart-ingresos" height="120"></canvas>
+                    <div style="position: relative; flex: 1; min-height: 120px;">
+                        <canvas id="chart-ingresos"></canvas>
+                    </div>
                 </div>
-                <div class="glass-card" style="flex: 0 0 200px; padding: 14px; display: flex; flex-direction: column; align-items: center;">
+                <div class="glass-card" style="flex: 0 0 200px; padding: 14px; display: flex; flex-direction: column; align-items: center; position: relative;">
                     <p style="color: var(--text-muted); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; margin: 0 0 8px;">Placas por Color</p>
-                    <canvas id="chart-colores" style="max-height: 120px;"></canvas>
+                    <div style="position: relative; flex: 1; min-height: 120px; width: 100%;">
+                        <canvas id="chart-colores"></canvas>
+                    </div>
                 </div>
             </div>
 
