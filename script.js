@@ -481,21 +481,32 @@ function renderTable(dataArray) {
     const tbody = document.getElementById("history-tbody");
     
     if (dataArray.length === 0) {
-        tbody.innerHTML = "<tr><td colspan=\"8\" style=\"text-align: center;\">No se encontraron recibos.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan=\"9\" style=\"text-align: center;\">No se encontraron recibos.</td></tr>";
         return;
     }
 
     let html = "";
     const currencyConfig = { style: "currency", currency: "MXN" };
 
+    const estadoBadge = {
+        "Pendiente":           "<span class=\"badge badge-danger\">⏳ Pendiente</span>",
+        "Lista para imprimir": "<span class=\"badge badge-warning\">🖨️ Lista</span>",
+        "Impresa":             "<span class=\"badge\" style=\"background:#6366f1;color:#fff;\">✅ Impresa</span>",
+        "Entregada":           "<span class=\"badge badge-success\">🎉 Entregada</span>",
+    };
+
     dataArray.forEach(row => {
         const fecha = row.created_at.split("T")[0];
         const tieneDeuda = row.saldo_restante > 0;
-        
-        const badgeEstado = tieneDeuda 
+        const ep = row.estado_produccion || "Pendiente";
+
+        const badgeEstado = tieneDeuda
             ? "<span class=\"badge badge-warning\">Debe Saldo</span>"
             : "<span class=\"badge badge-success\">Pagado</span>";
-            
+
+        const badgeProduccion = estadoBadge[ep]
+            || `<span class="badge">${ep}</span>`;
+
         const badgeEntrega = row.entregado
             ? "<span class=\"badge badge-success\">Sí</span>"
             : "<span class=\"badge badge-danger\">No</span>";
@@ -508,10 +519,12 @@ function renderTable(dataArray) {
                 <td>${row.concepto}</td>
                 <td>${badgeEstado}</td>
                 <td>${tieneDeuda ? row.saldo_restante.toLocaleString("es-MX", currencyConfig) : "$0.00"}</td>
+                <td>${badgeProduccion}</td>
                 <td>${badgeEntrega}</td>
                 <td>
                     ${tieneDeuda ? `<button class="action-btn-small btn-liquidar" onclick="liquidarDeuda(${row.id})">Liquidar</button>` : ""}
-                    ${!row.entregado ? `<button class="action-btn-small btn-entregar" onclick="marcarEntregado(${row.id})">Entregar</button>` : ""}
+                    ${ep === "Lista para imprimir" ? `<button class="action-btn-small" style="background:#6366f1;" onclick="marcarImpresa(${row.id})">Impresa</button>` : ""}
+                    ${!row.entregado && ep === "Impresa" ? `<button class="action-btn-small btn-entregar" onclick="marcarEntregado(${row.id})">Entregar</button>` : ""}
                 </td>
             </tr>
         `;
@@ -557,6 +570,24 @@ async function liquidarDeuda(id) {
         loadHistory(); // Recargar tabla
     } catch (e) {
         alert("Error al liquidar: " + e.message);
+    }
+}
+
+async function marcarImpresa(id) {
+    if(!confirm("¿Confirmas que esta plaquita ya salió de la impresora?")) return;
+
+    try {
+        if (!supabaseClient) throw new Error('Supabase no disponible');
+
+        const { error } = await supabaseClient
+            .from("recibos")
+            .update({ estado_produccion: "Impresa" })
+            .eq("id", id);
+
+        if (error) throw error;
+        loadHistory();
+    } catch (e) {
+        alert("Error al actualizar: " + e.message);
     }
 }
 
