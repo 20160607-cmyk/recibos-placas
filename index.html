@@ -91,6 +91,30 @@
                         </div>
                     </div>
 
+                    <div class="input-row">
+                        <div class="input-field">
+                            <label>Teléfono a Grabar (línea 1)</label>
+                            <input type="text" id="c-tel-grabado" placeholder="Ej. 5512345678">
+                        </div>
+                        <div class="input-field">
+                            <label>Teléfono a Grabar (línea 2) <span style="color:var(--text-muted);font-size:0.75rem;">Opcional</span></label>
+                            <input type="text" id="c-tel-grabado-2" placeholder="Ej. 5598765432">
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-field">
+                            <label>Color de Placa</label>
+                            <input type="text" id="c-color-placa" list="color-options" placeholder="Selecciona o escribe">
+                            <datalist id="color-options">
+                                <option value="Negro (letras blancas)">
+                                <option value="Rosa (letras negras)">
+                                <option value="Azul (letras blancas)">
+                                <option value="Verde (letras negras)">
+                            </datalist>
+                        </div>
+                    </div>
+
                     <div class="input-field">
                         <label>Concepto (Producto)</label>
                         <input type="text" id="i-desc" placeholder="Ej. Plaquita Hueso Azul" value="Plaquita Personalizada 3D">

@@ -27,7 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
         rStatus: document.getElementById('r-status'),
         iAdvance: document.getElementById('i-advance'),
         rFolio: document.getElementById('r-folio'),
-        rFolioFull: document.getElementById('r-folio-full')
+        rFolioFull: document.getElementById('r-folio-full'),
+        cTelGrabado: document.getElementById('c-tel-grabado'),
+        cTelGrabado2: document.getElementById('c-tel-grabado-2'),
+        cColorPlaca: document.getElementById('c-color-placa')
     };
 
     // 2. Obtener referencias a los elementos de salida (Vista previa)
@@ -147,7 +150,7 @@ async function saveToCloud() {
     const saldo_restante = isAdvance ? (total - anticipo) : 0;
     const folioUI = document.getElementById('out-id').textContent; // Folio de 4 dÃƒÂ­gitos generado
 
-    const dataObj = { 
+    const dataObj = {
         cliente: document.getElementById('c-name').value || 'Sin Nombre',
         mascota: document.getElementById('c-pet').value || '--',
         concepto: document.getElementById('i-desc').value || 'Plaquita',
@@ -159,7 +162,10 @@ async function saveToCloud() {
         saldo_restante: saldo_restante,
         total: total,
         folio_recibo: folioUI,
-        entregado: false
+        entregado: false,
+        telefono_grabado: (document.getElementById('c-tel-grabado').value || '').trim(),
+        telefono_grabado_2: (document.getElementById('c-tel-grabado-2').value || '').trim(),
+        color_placa: (document.getElementById('c-color-placa').value || '').trim()
     };
 
     if (!supabaseClient) throw new Error('Supabase no disponible');
