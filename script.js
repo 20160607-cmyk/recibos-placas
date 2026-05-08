@@ -9,6 +9,81 @@ try {
     supabaseClient = null;
 }
 
+// ==========================================
+// PLACAS ADICIONALES
+// ==========================================
+let extraPlateCount = 0;
+
+function addExtraPlate() {
+    extraPlateCount++;
+    const n = extraPlateCount;
+    const container = document.getElementById('extra-plates-container');
+    const card = document.createElement('div');
+    card.className = 'extra-plate-card';
+    card.id = `plate-card-${n}`;
+    card.innerHTML = `
+        <div class="extra-plate-header">
+            <span>🐾 Placa ${n + 1}</span>
+            <button type="button" class="btn-remove-plate" onclick="removeExtraPlate(${n})">✕ Quitar</button>
+        </div>
+        <div class="input-field">
+            <label>Nombre de Mascota</label>
+            <input type="text" id="ep-pet-${n}" placeholder="Ej. Max" oninput="updatePreview()">
+        </div>
+        <div class="input-field" style="margin-bottom:12px;">
+            <label>Color de Placa</label>
+            <input type="text" id="ep-color-${n}" list="color-options" placeholder="Selecciona o escribe">
+        </div>
+        <label class="same-tel-label">
+            <input type="checkbox" id="ep-same-tel-${n}" checked onchange="toggleExtraTels(${n})">
+            Usar mismos teléfonos que Placa 1
+        </label>
+        <div id="ep-tel-fields-${n}" style="display:none;">
+            <div class="input-row">
+                <div class="input-field">
+                    <label>Teléfono Línea 1</label>
+                    <input type="text" id="ep-tel-${n}" placeholder="Ej. 5512345678">
+                </div>
+                <div class="input-field">
+                    <label>Teléfono Línea 2 <span style="color:var(--text-muted);font-size:0.75rem;">Opcional</span></label>
+                    <input type="text" id="ep-tel2-${n}" placeholder="Ej. 5598765432">
+                </div>
+            </div>
+        </div>
+    `;
+    container.appendChild(card);
+    updatePreview();
+}
+
+function removeExtraPlate(n) {
+    const card = document.getElementById(`plate-card-${n}`);
+    if (card) card.remove();
+    updatePreview();
+}
+
+function toggleExtraTels(n) {
+    const cb = document.getElementById(`ep-same-tel-${n}`);
+    const fields = document.getElementById(`ep-tel-fields-${n}`);
+    if (fields) fields.style.display = cb.checked ? 'none' : 'block';
+}
+
+function getExtraPlates() {
+    const tel1Main = (document.getElementById('c-tel-grabado').value || '').trim();
+    const tel2Main = (document.getElementById('c-tel-grabado-2').value || '').trim();
+    const plates = [];
+    for (let n = 1; n <= extraPlateCount; n++) {
+        if (!document.getElementById(`plate-card-${n}`)) continue;
+        const mascota = (document.getElementById(`ep-pet-${n}`).value || '').trim();
+        if (!mascota) continue;
+        const color = (document.getElementById(`ep-color-${n}`).value || '').trim();
+        const sameTel = document.getElementById(`ep-same-tel-${n}`).checked;
+        const tel1 = sameTel ? tel1Main : (document.getElementById(`ep-tel-${n}`).value || '').trim();
+        const tel2 = sameTel ? tel2Main : (document.getElementById(`ep-tel2-${n}`).value || '').trim();
+        plates.push({ mascota, color_placa: color, telefono_grabado: tel1, telefono_grabado_2: tel2 });
+    }
+    return plates;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     checkSession();
 
@@ -87,7 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
         outputs.bPhone.textContent = inputs.bPhone.value ? `Tel: ${inputs.bPhone.value}` : '';
         
         outputs.cName.textContent = inputs.cName.value || '--';
-        outputs.cPet.textContent = inputs.cPet.value || '--';
+        const allPetNames = [inputs.cPet.value].filter(v => v.trim());
+        for (let _n = 1; _n <= extraPlateCount; _n++) {
+            const _el = document.getElementById(`ep-pet-${_n}`);
+            if (_el && document.getElementById(`plate-card-${_n}`)) {
+                const _v = (_el.value || '').trim();
+                if (_v) allPetNames.push(_v);
+            }
+        }
+        outputs.cPet.textContent = allPetNames.length ? allPetNames.join(', ') : '--';
         
         if (inputs.rDate.value) {
             const [y, m, d] = inputs.rDate.value.split('-');
@@ -150,6 +233,7 @@ async function saveToCloud() {
     const saldo_restante = isAdvance ? (total - anticipo) : 0;
     const folioUI = document.getElementById('out-id').textContent; // Folio de 4 dÃƒÂ­gitos generado
 
+    const extraPlates = getExtraPlates();
     const dataObj = {
         cliente: document.getElementById('c-name').value || 'Sin Nombre',
         mascota: document.getElementById('c-pet').value || '--',
@@ -165,7 +249,8 @@ async function saveToCloud() {
         entregado: false,
         telefono_grabado: (document.getElementById('c-tel-grabado').value || '').trim(),
         telefono_grabado_2: (document.getElementById('c-tel-grabado-2').value || '').trim(),
-        color_placa: (document.getElementById('c-color-placa').value || '').trim()
+        color_placa: (document.getElementById('c-color-placa').value || '').trim(),
+        detalles_placas: extraPlates.length > 0 ? extraPlates : null
     };
 
     if (!supabaseClient) throw new Error('Supabase no disponible');
@@ -242,15 +327,20 @@ async function downloadImage() {
 }
 
 function clearForm() {
-    if(confirm('Ã‚Â¿Deseas limpiar los datos de esta venta?')) {
+    if(confirm('¿Deseas limpiar los datos de esta venta?')) {
         document.getElementById('c-name').value = '';
         document.getElementById('c-pet').value = '';
+        document.getElementById('c-tel-grabado').value = '';
+        document.getElementById('c-tel-grabado-2').value = '';
+        document.getElementById('c-color-placa').value = '';
         document.getElementById('i-qty').value = '1';
         document.getElementById('i-price').value = '150';
         document.getElementById('r-folio').value = '';
         document.getElementById('r-folio-full').value = '';
         document.getElementById('r-status').value = 'Completo';
-        document.getElementById('c-name').dispatchEvent(new Event('input'));
+        document.getElementById('extra-plates-container').innerHTML = '';
+        extraPlateCount = 0;
+        window.updatePreview();
     }
 }
 
@@ -609,32 +699,40 @@ function showRowDetails(id) {
     const row = historyData.find(r => r.id === id);
     if (!row) return;
 
-    const mascota = row.mascota || '—';
-    const tel1 = row.telefono_grabado || '—';
-    const tel2 = row.telefono_grabado_2 || '—';
-    const color = row.color_placa || '—';
+    const extras = Array.isArray(row.detalles_placas) ? row.detalles_placas : [];
+    const allPlates = [
+        { mascota: row.mascota, telefono_grabado: row.telefono_grabado, telefono_grabado_2: row.telefono_grabado_2, color_placa: row.color_placa },
+        ...extras
+    ];
 
-    document.getElementById('details-modal-body').innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-            <div>
-                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Mascota</span>
-                <p style="color: #fff; font-size: 1.1rem; font-weight: 700; margin: 4px 0 0;">${mascota}</p>
+    const plateHtml = allPlates.map((p, i) => {
+        const tel2 = (p.telefono_grabado_2 || '').trim();
+        return `
+            <div style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 14px;">
+                ${allPlates.length > 1 ? `<div style="font-size:0.8rem;color:var(--primary);font-weight:700;margin-bottom:8px;">🐾 Placa ${i + 1}</div>` : ''}
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div>
+                        <span style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Mascota</span>
+                        <p style="color:#fff;font-size:1.05rem;font-weight:700;margin:3px 0 0;">${p.mascota || '—'}</p>
+                    </div>
+                    <div>
+                        <span style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Teléfono Línea 1</span>
+                        <p style="color:#fff;font-size:1rem;margin:3px 0 0;">${p.telefono_grabado || '—'}</p>
+                    </div>
+                    ${tel2 ? `<div>
+                        <span style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Teléfono Línea 2</span>
+                        <p style="color:#fff;font-size:1rem;margin:3px 0 0;">${tel2}</p>
+                    </div>` : ''}
+                    <div>
+                        <span style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Color de Placa</span>
+                        <p style="color:#fff;font-size:0.95rem;margin:3px 0 0;">${p.color_placa || '—'}</p>
+                    </div>
+                </div>
             </div>
-            <div>
-                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Teléfono Línea 1</span>
-                <p style="color: #fff; font-size: 1.1rem; margin: 4px 0 0;">${tel1}</p>
-            </div>
-            <div>
-                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Teléfono Línea 2</span>
-                <p style="color: ${tel2 === '—' ? 'var(--text-muted)' : '#fff'}; font-size: 1.1rem; margin: 4px 0 0;">${tel2}</p>
-            </div>
-            <div>
-                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Color de Placa</span>
-                <p style="color: #fff; font-size: 1rem; margin: 4px 0 0;">${color}</p>
-            </div>
-        </div>
-    `;
+        `;
+    }).join('');
 
+    document.getElementById('details-modal-body').innerHTML = `<div>${plateHtml}</div>`;
     document.getElementById('details-modal').style.display = 'flex';
 }
 
